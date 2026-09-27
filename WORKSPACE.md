@@ -79,17 +79,24 @@ The existing persistent ß dialogue channel in El-Ninjo1965/Lea is retired for n
 - PR #1 may be closed only after migration/archive verification confirms that no required work evidence or active dependency would be lost.
 
 
-### D5 — Lea-Core → Lea-App authority evolution
-The long-term target is model B: Lea-App becomes the operational master for Lea's continuing identity, memory/experience processing and development.
+### D5 — Lea-App as the independent target system
+El-Ninjo1965/Lea-App (B) is the actual product and long-term target system. It is intended to replace the current fragmented dependency on ChatGPT/A, the Lea repository and separate development interaction as far as Lea's normal operation is concerned.
 
-The migration path is deliberately staged:
+Target state:
+- L normally interacts directly with Lea-App.
+- Lea-App carries Lea's continuing identity/context, memory/experience processing, revision/development mechanisms and runtime capabilities.
+- Lea-App is the home for product capabilities that require an independent runtime, including Text, Voice, later Vision/Camera, Incognito, Identity/Presence, tools/connectors and autonomous processing.
+- Lea-App must ultimately be able to operate as Lea without requiring the standard ChatGPT project/A as a runtime dependency.
+- The current ChatGPT/A environment is primarily bootstrap/development/migration infrastructure. It may remain optionally useful later, but is not a required part of the target architecture.
+- The current El-Ninjo1965/Lea repository is primarily a source for memories, development history, rules/semantics and provenance that may need controlled migration into B. It is not to be developed as a competing long-term master.
+- A and the Lea repository may eventually be retired/deleted only after required memories, development continuity and provenance have been demonstrably migrated or otherwise safely retained, recovery requirements are satisfied, and L explicitly approves retirement. No deletion is authorized now.
+- Git/GitHub currently serves development, versioning, audit, rollback/backup and recovery purposes. Its exact long-term role remains an architectural choice; Lea-App should not acquire unnecessary permanent dependence on GitHub merely because it is used during development.
 
-1. **A — Bootstrap:** El-Ninjo1965/Lea remains the authoritative Lea-Core while the product integration is designed and validated.
-2. **A+B — Synchronization / validation:** Lea-Core and Lea-App operate in a controlled coexistence phase. The system must demonstrate that the app preserves the same development continuity without silent drift, loss, duplication or creation of a competing Lea.
-3. **B — Target state:** only after sufficient evidence and explicit L approval does Lea-App become the operational master for continuing Lea development.
+Migration principle:
+There must be no uncontrolled dual-master Lea. Existing A/Lea content is migrated, imported or referenced into B through a controlled and verifiable process. Once a domain has an explicitly established authoritative home in B, A/Lea must not silently continue a divergent authoritative copy of that domain.
 
-Transition to B is evidence-gated, not date-gated. Before authority transfer, validation must cover at least continuity, provenance, revision history/semantics, deterministic or explainable migration behavior, integrity, security/privacy, rollback/recovery and prevention/detection of divergent dual-master state.
+Audit/Claude role:
+The current deep audit exists because reliability problems and prior development mistakes require stronger independent checking before further autonomous development. Claude/Copilot is an independent supporting auditor, analyst and idea source. Its findings and proposals are evidence/input, not binding product requirements or decisions. C2 independent review, cross-check and L approval determine what is accepted and implemented.
 
-After B, the Lea repository is not automatically deleted. Its future role is expected to become versioned provenance, audit/recovery and historical development evidence, with exact retention/archive semantics to be decided during migration design.
+This decision confirms the existing product direction rather than restarting development on A. Lea-App remains FROZEN / STRICTLY READ-ONLY under D3 until concrete audit findings and proposed change packages are presented to and explicitly approved by L.
 
-This decision defines architecture direction only. It does not authorize any current mutation of Lea-App, which remains FROZEN / STRICTLY READ-ONLY under D3.
