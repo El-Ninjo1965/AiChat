@@ -1,9 +1,11 @@
 # IMPLEMENTATION-MAP — Executable dependency map for target B
 
-This map turns `B-BLUEPRINT.md` into small, independently verifiable work packages. It is planning only: this run implements nothing.
+This map turns `B-BLUEPRINT.md` into small, independently verifiable work packages. It is planning only: no run has implemented anything.
+
+**Reconciled per AGENT_TASK v4 (C2 blueprint reconciliation):** the packages, dependencies and gates follow WORKSPACE D6–D12. Provenance of the corrections is in §11; the original v3 text is preserved in Git (`11497e7`).
 
 **Sources (pinned):**
-- AiChat main `28f9fff` (WORKSPACE.md, AGENT_TASK.md v3);
+- AiChat main `6fb71ff` (WORKSPACE.md D1–D12, AGENT_TASK.md v4); earlier `28f9fff` (v3);
 - AiChat audit `899515c` (AUDIT-FINDINGS.md AUD-01..28);
 - Lea main `757880a`;
 - Lea-App main `450ff9d` (FROZEN / STRICTLY READ-ONLY at the time of writing).
@@ -13,7 +15,7 @@ This map turns `B-BLUEPRINT.md` into small, independently verifiable work packag
 - **not** an authorisation to implement;
 - **no PASS claim**.
 
-Labels follow `B-BLUEPRINT.md` §0.1 (FACT / INFERENCE / TO VERIFY / RECOMMENDATION / L-DECISION-LATER).
+Labels follow `B-BLUEPRINT.md` §0.1 (FACT / INFERENCE / TO VERIFY / RECOMMENDATION / SETTLED (Dn) / GOVERNANCE / L-DECISION-LATER). The decision register is `B-BLUEPRINT.md` §0.4. Only LDL-08, LDL-09 (retention part) and LDL-10 (narrowed) are OPEN.
 
 ---
 
@@ -69,12 +71,12 @@ Every package card has these fields:
 |---|---|---|---|
 | **M0** | Safe foundation | Endpoints protected, no client prompt injection, no plaintext message leak to V1, CI and branch protection active, test harness exists | G-M0: C2 audit + L approval |
 | **M1** | One Lea | Text and voice use the same server-loaded identity core; orchestrator skeleton, receipts and monitor events exist | G-M1: C2 + L manual continuity test |
-| **M2** | Keys and store | Tier-C key infra, M3 schema, memory service v3, backup/restore drill | G-M2: C2 (A3) + restore drill evidence |
-| **M3** | Experience cycle | Evidence/model/prediction/review/revision APIs, promotion rules, V1 frozen, V2→M3 Tier-P migration, recovery code | G-M3: C2 + L test "Lea remembers across sessions and modes" |
-| **M4** | Migration | Lea repo (and optionally A exports) imported with provenance; domain state machine; the first domain B_AUTHORITATIVE | G-M4: Lea sample review + C2 + L approval per domain |
-| **M5** | Capabilities | Monitor UI, Incognito, idle, vision/visual memory, presence, autonomy/gates, connectors, external AI, frontend IA, PWA, jobs, retention | G-M5: per package C2; the Hosting Gate before the working tool |
+| **M2** | Keys and store | Server-side key infra (classes C, P-N), M3 schema (V1/V2 convergence, D11), memory service v3, multi-generation backup + verified restore drill (data + keys, D10) | G-M2: C2 (A3) + restore drill evidence |
+| **M3** | Experience cycle | Evidence/model/prediction/review/revision APIs, promotion rules, V1 writes frozen (sources retained), V2→M3 migration with per-item class, P-E2E recovery code, V1 semantic import (IM-M10) | G-M3: C2 + L test "Lea remembers across sessions and modes" |
+| **M4** | Migration | Lea repo (and optionally A exports) imported item by item with provenance, D7 status and protection class; domain state machine; the first domain B_AUTHORITATIVE | G-M4: Lea sample review + C2 + L approval per domain |
+| **M5** | Capabilities | Monitor UI (visible by default, D9), Incognito (D6), idle, vision/visual memory, presence, autonomy/gates, connectors, external AI, frontend IA, PWA, jobs, retention | G-M5: per package C2; the Hosting Gate before the working tool |
 | **M6** | Independence | B runs normal operation without A | **IM-X01 Independence Gate** |
-| **M7** | Retirement (optional, per domain) | A/Lea can be archived for a domain | **IM-X02 Retirement Gate** (always an L decision, LDL-12) |
+| **M7** | Retirement (optional, per domain) | A/Lea can be archived for a domain | **IM-X02 Retirement Gate** (explicit L approval; D5 gate) |
 
 **Security-critical repairs before feature expansion:**
 - No M1+ package may start before G-M0 has passed.
@@ -96,16 +98,18 @@ IM-H00 (hosting register, facts) ──> IM-E01 (staging) ──> [G-M0]
 [G-M0] ──> IM-O01 adapter+orchestrator ──> IM-O02 receipts/audit ──> IM-O03 telemetry
 IM-I02 (IC content, Lea/L) ─┐
 IM-I01 (IC store) ──────────┴─> IM-O04 text uses IC ──> IM-O05 voice uses IC ──> [G-M1]
-[G-M1] ──> IM-M01 Tier-C keys ──> IM-M02 M3 schema ──> IM-M03 memory service v3 ──> IM-M09 backup drill ──> [G-M2]
+[G-M1] ──> IM-M01 server keys C/P-N ──> IM-M02 M3 schema ──> IM-M03 memory service v3 ──> IM-M09 backup gens + restore drill ──> [G-M2]
 [G-M2] ──> IM-M04 entity APIs ──> IM-M05 promotion ──> IM-M07 V1 freeze
-          IM-S07 key non-extractable ──> IM-M08 recovery code ──> IM-M06 V2→M3 Tier-P ──> [G-M3]
-[G-M3] ──> IM-MG01 import dry-run ──> IM-MG02 import commit ──> IM-MG03 domain transition ──> [G-M4]
+          IM-S07 key non-extractable ──> IM-M08 P-E2E recovery code ──> IM-M06 V2→M3 (per-item class) ──> [G-M3]
+          IM-M05 + IM-M09 ──> IM-M10 V1 semantic import ──> [G-M3]
+[G-M3] ──> IM-MG01 item-level import dry-run ──> IM-MG02 import commit (needs IM-M09 fresh snapshot) ──> IM-MG03 domain transition ──> [G-M4]
                                      IM-MG04 A export import (optional, parallel after IM-MG01)
-[G-M3] ──> IM-C07 capability gate ──┬─> IM-C08 connectors ──> IM-C09 external AI
-                                    ├─> IM-C11 processing mechanisms
-                                    └─> IM-H01 Hosting Gate ──> IM-C10 working tool
+[G-M3] + IM-M09 ──> IM-C07 risk classes R0–R3 ──┬─> IM-C08 connectors ──> IM-C09 external AI (policy LDL-10)
+                                                 ├─> IM-C11 processing mechanisms
+                                                 └─> IM-H01 Hosting Gate (evidence) ──> IM-C10 working tool
 [G-M1] ──> IM-C03 idle ; IM-C12 frontend IA ; IM-C13 PWA
-[G-M3] ──> IM-C01 monitor UI ; IM-C02 Incognito ; IM-C04 vision ──> IM-C05 visual memory
+[G-M3] ──> IM-C01 monitor UI ; IM-C04 vision ──> IM-C05 visual memory
+[G-M3] + IM-O03 + IM-M09 ──> IM-C02 Incognito
 [G-M3] ──> IM-C06 presence ; IM-C14 jobs ──> IM-C15 retention
 [G-M4] + all M5 packages required for normal operation ──> IM-X01 Independence Gate
 IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
@@ -132,7 +136,7 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
   - deploy reference (if any);
   - a confirmation that no other paths changed (`git diff --stat base..merged`).
 - **Rule U-4:** two packages may be unfrozen concurrently only if their allowed path sets are disjoint (see the parallelism table, §5).
-- **Rule U-5:** a production deploy is always its own tier-3 step: L approval + C2, never implied by a code merge.
+- **Rule U-5:** a production deploy is always its own R3 step (blueprint §11): L approval + C2, never implied by a code merge.
 
 ---
 
@@ -143,7 +147,7 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 ### M0 — Safe foundation
 
 #### IM-G01 — CI pipeline and branch protection
-- **Objective:** Automated tests and a secret scan on every PR; protected `main` (LDL-16).
+- **Objective:** Automated tests and a secret scan on every PR; protected `main` (GOVERNANCE recommendation / admin action; formerly LDL-16).
 - **Prerequisites:** IM-G03; L enables branch protection in the GitHub settings (an agent cannot do this, FACT: the API is 403 for this run).
 - **Scope:**
   - add a CI workflow running `node --test` (existing 7 files);
@@ -161,12 +165,12 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Risk:** low. **Agent:** A1. **Gates:** L (settings); C2 light.
 
 #### IM-G02 — Authority registry (AiChat)
-- **Objective:** Seed `AUTHORITY-REGISTRY.md` from `B-BLUEPRINT.md` §1.2/§31 (CTL-01, LDL-14).
+- **Objective:** Seed `AUTHORITY-REGISTRY.md` from `B-BLUEPRINT.md` §1.2/§31 (CTL-01; GOVERNANCE, formerly LDL-14).
 - **Prerequisites:** none.
 - **Scope:** AiChat only; one table domain → authority → migration state (§8 state machine).
 - **Likely files:** `AiChat/AUTHORITY-REGISTRY.md` (new).
 - **Forbidden scope:** WORKSPACE decisions; Lea; Lea-App.
-- **Acceptance:** every store in blueprint §31 is listed exactly once, with state `SOURCE_ONLY` or `N/A`.
+- **Acceptance:** every store in blueprint §31 is listed exactly once, with state `SOURCE_ONLY` or `N/A`. V1/V2 are listed as migration sources (D11); the Incognito buffer is listed as non-store.
 - **Automated tests:** none. **Manual L test:** L reads and approves.
 - **Rollback:** revert the file. **Risk:** low. **Agent:** A1. **Gates:** L approval.
 
@@ -219,7 +223,7 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
   - a documented deploy step exists.
 - **Automated tests:** a config lint (no prod identifiers in staging templates).
 - **Manual L test:** L logs into staging.
-- **Rollback:** remove staging. **Risk:** medium. **Agent:** A2. **Gates:** L (tier 3: infrastructure).
+- **Rollback:** remove staging. **Risk:** medium. **Agent:** A2. **Gates:** L (R3: infrastructure).
 
 #### IM-S01 — Auth guard on chat and realtime; default-deny routes
 - **Objective:** Close AUD-23: all cost-bearing and memory endpoints require a valid session (blueprint §25 I-AU-S1).
@@ -255,7 +259,7 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Prerequisites:** IM-S01.
 - **Scope:**
   - chat endpoint request contract;
-  - a server-side conversation buffer (Tier-C TTL; initial storage: a DB table or session-bound storage; RECOMMENDATION DB);
+  - a server-side conversation buffer (class C; short TTL with a justification per blueprint §45; initial storage: a DB table or session-bound storage; RECOMMENDATION DB). It is designed so that Incognito conversations (IM-C02) can later use a separate transient buffer that is excluded from backups;
   - the client stops sending `history`/`memory_context`.
 - **Likely files:** `api/text/chat.php`, `frontend/app.js` (`sendTextMessage`), new migration `database/migrations/003_conversation_buffer.sql` (proposal).
 - **Forbidden scope:** identity core (IM-I01/IM-O04); memory store changes; model/provider change.
@@ -274,12 +278,12 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Prerequisites:** IM-T01.
 - **Scope:** remove that write (or replace it with a content-free marker, e.g. timestamp only).
 - **Likely files:** `frontend/app.js`.
-- **Forbidden scope:** deleting existing V1 rows (data handling is LDL-17/IM-C15); the work-state API itself.
+- **Forbidden scope:** deleting existing V1 rows (V1 is a migration source until verified transfer, D11; erasure is IM-C15); the work-state API itself.
 - **Acceptance:** after a text message, no new V1 row contains message content.
 - **Automated tests:** a JS unit test with a fetch mock asserting no work-state POST containing content; a DB canary test in the harness.
 - **Manual L test:** none.
 - **Rollback:** revert. **Risk:** low. **Agent:** A2. **Gates:** C2.
-- **Note:** existing plaintext rows in V1 remain. Their deletion requires an L decision (LDL-17) and is **not** part of this package.
+- **Note:** existing plaintext rows in V1 remain as a migration source (D11). Deleting them is an R3 action requiring explicit L approval after verified transfer, and is **not** part of this package.
 
 #### IM-S05 — Rate, size and spend limits
 - **Objective:** Blueprint §26: per-principal request/token/voice-minute limits, a global daily cap, request size limits, provider timeouts.
@@ -300,7 +304,7 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Prerequisites:** IM-S01, IM-T01.
 - **Scope:** session store, login throttling store, the memory token check.
 - **Likely files:** `api/memory/auth.php`, `api/memory/session.php`, `api/memory/_common.php`, new migration `database/migrations/004_sessions.sql` (proposal).
-- **Forbidden scope:** password hashing change (only if a defect is found, as a separate package); Tier-P crypto.
+- **Forbidden scope:** password hashing change (only if a defect is found, as a separate package); P-E2E crypto.
 - **Acceptance:**
   - concurrent logins do not corrupt state;
   - logout invalidates memory API access immediately;
@@ -315,7 +319,7 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Prerequisites:** IM-T01.
 - **Scope:** `memory-crypto.js` key import and any re-wrap flow.
 - **Likely files:** `frontend/memory-crypto.js`, `tests/memory-crypto*.test.js`.
-- **Forbidden scope:** changing the KDF/cipher parameters or the AAD format.
+- **Forbidden scope:** changing the KDF/cipher parameters or the AAD format (those are security-package decisions per D12, not part of this fix).
 - **Acceptance:**
   - existing crypto tests are green;
   - `crypto.subtle.exportKey` on the master key fails;
@@ -345,18 +349,18 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Risk:** medium. **Agent:** A2. **Gates:** C2.
 
 #### IM-I02 — Identity core content v1 (document, not code)
-- **Objective:** Draft the IC v1 content from Lea VISION/PROCESSING category-C rules (LDL-08).
+- **Objective:** Draft the IC v1 content from Lea VISION/PROCESSING category-C rules (**OPEN: LDL-08 content approval**).
 - **Prerequisites:** none (draft); L decision LDL-08 (final).
 - **Scope:** a text document in AiChat (draft), reviewed by Lea; then delivered as data to IM-I01.
 - **Likely files:** `AiChat/IDENTITY-CORE-DRAFT.md` (new).
-- **Forbidden scope:** personal/health/legal content; workshop shortcuts (P10).
+- **Forbidden scope:** workshop shortcuts (P10); sensitive personal material (class P belongs in M3 records, not in the IC, which is class C and always in context).
 - **Acceptance:**
   - every statement is traceable to a source anchor;
   - the reality-labelling rules are included;
   - it fits the budget.
 - **Automated tests:** none (a token count script may be used in the CI of IM-I01).
 - **Manual L test:** L and Lea approve the content.
-- **Rollback:** previous version. **Risk:** medium (identity). **Agent:** A3 (drafting) + Lea review. **Gates:** Lea C2 + L (tier 3).
+- **Rollback:** previous version. **Risk:** medium (identity). **Agent:** A3 (drafting) + Lea review. **Gates:** Lea C2 + L (R3).
 
 #### IM-O01 — Provider adapter and orchestrator skeleton
 - **Objective:** Blueprint §9/§9.5: one adapter for text/realtime/vision; the orchestrator pipeline with steps as functions (retrieve is a stub until M3).
@@ -385,12 +389,17 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Risk:** medium. **Agent:** A2. **Gates:** C2.
 
 #### IM-O03 — Content-free telemetry events
-- **Objective:** Blueprint §30 event schema, emitted by orchestrator steps (I-MO-1).
+- **Objective:** Blueprint §30 event schema, emitted by orchestrator steps (I-MO-1). Two independent controls (D9): monitor visibility and telemetry persistence. Deliver a **retention proposal with a technical/privacy justification** as the input to the OPEN L decision LDL-09 (retention part). There is no 90-day default.
 - **Prerequisites:** IM-O01.
 - **Scope:** events table + emission; no UI (IM-C01).
 - **Likely files:** migration `database/migrations/006_telemetry.sql` (proposal), `lib/telemetry.php`.
 - **Forbidden scope:** any content/chain-of-thought field.
-- **Acceptance:** each turn has events for the steps actually executed; a schema test rejects unknown fields.
+- **Acceptance:**
+  - each turn has events for the steps actually executed;
+  - a schema test rejects unknown fields;
+  - the persistence switch works independently of visibility;
+  - Incognito turns persist only content-free security/cost counters (blueprint §20);
+  - the retention proposal document exists. Until L decides, persistence uses the shortest technically useful value, stated as provisional.
 - **Automated tests:** trace-vs-event comparison test.
 - **Manual L test:** none. **Rollback:** disable the flag.
 - **Risk:** low. **Agent:** A2. **Gates:** C2.
@@ -411,7 +420,7 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Prerequisites:** IM-O04; TO VERIFY the provider API for instructions in client secret/session creation (current docs).
 - **Scope:** realtime session creation.
 - **Likely files:** `realtime/session.php`, `lib/orchestrator.php`, `frontend/app.js` (`startSession` unchanged except error handling).
-- **Forbidden scope:** transcript storage (LDL-18); idle logic (IM-C03).
+- **Forbidden scope:** persistent raw transcript storage (blueprint §13; transcripts follow the text session/promotion rules); idle logic (IM-C03).
 - **Acceptance:** voice session instructions include the same IC hash as text (I-ID-1).
 - **Automated tests:** a mock provider asserts the instructions hash.
 - **Manual L test:** voice and text give consistent self-descriptions.
@@ -421,28 +430,30 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 
 ### M2 — Keys and store
 
-#### IM-M01 — Tier-C key infrastructure
-- **Objective:** Blueprint §28: a server master key outside the web root; data keys; `key_ref`; rotation procedure (LDL-03).
+#### IM-M01 — Server-side key infrastructure (classes C and P-N)
+- **Objective:** Blueprint §28 (D12): a server master key outside the web root; separate data keys for class C and class P-N; `key_ref`; a rotation procedure. The concrete algorithms/KDF/hierarchy are **RECOMMENDATIONS to be verified** in this package's security review, not frozen requirements.
 - **Prerequisites:** G-M1; IM-H00 (files outside the web root: FACT required).
 - **Scope:** a key loading library + rotation doc; **no data yet**.
 - **Likely files:** new `lib/keys.php` (proposal), a deploy doc.
-- **Forbidden scope:** storing keys in the DB or repo; Tier-P changes.
+- **Forbidden scope:** storing keys in the DB or repo; P-E2E changes.
 - **Acceptance:**
   - encrypt/decrypt round trip;
   - a wrong key fails loudly;
+  - a P-N key is not usable from non-owner contexts (access-path test);
   - the key file is not web-accessible (manual check);
   - the rotation procedure has been tested in staging.
 - **Automated tests:** unit tests; IV uniqueness sampling.
 - **Manual L test:** L verifies the key backup is stored offline.
-- **Rollback:** feature flag off. **Risk:** high. **Agent:** A3. **Gates:** C2; L (tier 3).
+- **Rollback:** feature flag off. **Risk:** high. **Agent:** A3. **Gates:** C2 (crypto design review); L (R3).
 
 #### IM-M02 — M3 schema
-- **Objective:** Blueprint §4.1/§4.2 tables: records, relations, import batches, schema_migrations.
+- **Objective:** Blueprint §4.1/§4.2 tables: records, relations, import batches, schema_migrations. M3 is the D11 convergence of V1 semantic concepts and the V2 envelope/append-only foundations. The exact schema is decided **in this package's C2 review**; blueprint §4 is the working target concept. Includes the `protection_class` field and the D7 status values.
 - **Prerequisites:** IM-M01.
 - **Scope:** forward-only migrations + verification queries.
 - **Likely files:** `database/migrations/007_m3_records.sql`, `008_m3_relations.sql` (proposals).
 - **Forbidden scope:** altering or deleting V1/V2 tables.
 - **Acceptance:**
+  - a V1/V2 concept mapping table shows each proven V1 semantic concept and V2 mechanism as kept, merged, or explicitly superseded with a reason (no silent discard, D11);
   - the migration applies cleanly on a copy of the prod schema in staging;
   - verification queries pass;
   - the checksum is recorded.
@@ -451,7 +462,7 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Risk:** medium. **Agent:** A3. **Gates:** C2.
 
 #### IM-M03 — Memory service v3 (records/relations API)
-- **Objective:** Blueprint §4/§32: create, list, revise and relate with the envelope validation invariants I-M-1..5; IC migrates to `kind=IC`.
+- **Objective:** Blueprint §4/§32: create, list, revise and relate with the envelope validation invariants I-M-1..6; IC migrates to `kind=IC`. The API contract is finalised in this package's C2 review (D11).
 - **Prerequisites:** IM-M02, IM-O02.
 - **Scope:** v3 routes for records/relations; revision chain; optimistic concurrency.
 - **Likely files:** new `api/v3/memory/*.php` (proposal), `.htaccess` (route additions only).
@@ -465,18 +476,28 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Manual L test:** none. **Rollback:** feature flag off.
 - **Risk:** high. **Agent:** A3. **Gates:** C2.
 
-#### IM-M09 — Backup and restore drill
-- **Objective:** Blueprint §38: an automated encrypted DB dump + a documented restore into staging, executed once.
-- **Prerequisites:** IM-M02, IM-E01.
-- **Scope:** backup script/procedure + drill report.
+#### IM-M09 — Backup generations and restore drill (recovery-by-design, D10)
+- **Objective:** Blueprint §38. Multi-generation encrypted backups covering the full recovery scope (DB/schema, M3 data, relevant config, visual-memory files, and the keys for C/P-N stored offline), plus a documented, **verified** restore into staging. Also a pre-change snapshot procedure for R2/R3 actions.
+- **Prerequisites:** IM-M02, IM-E01, IM-M01.
+- **Scope:**
+  - a backup script/procedure with generation rotation;
+  - a pre-change snapshot procedure;
+  - the drill report;
+  - a drill schedule (recommended quarterly and after changes to backup tooling or keys).
 - **Likely files:** deploy docs; optional `tools/backup.*` outside the web root (TO VERIFY hosting).
-- **Forbidden scope:** restoring into production; storing backups in Git.
-- **Acceptance:** the drill report shows counts equal and Tier-C decrypt samples OK, **using the Tier-C master key restored from its offline backup** (not the live key file).
-- **Automated tests:** none (procedural).
-- **Manual L test:** L confirms the off-site copy exists.
-- **Rollback:** n/a. **Risk:** medium. **Agent:** A2. **Gates:** L; C2 of the report.
+- **Forbidden scope:** restoring into production; storing backups in Git; including the Incognito buffer in backups.
+- **Acceptance:**
+  - ≥ 2 generations exist, and restoring an **older** generation is shown to work;
+  - the drill report shows counts equal, integrity hashes OK, and decrypt samples OK for C and P-N, **using keys restored from their offline backup** (not the live key file);
+  - config and files are restored;
+  - a pre-change snapshot is taken and verified once;
+  - Git rollback is documented as code-only.
+- **Automated tests:** a backup-exclusion test (no Incognito buffer tables in the dump); a generation-rotation test.
+- **Manual L test:** L confirms the off-site copy and the offline key backup exist.
+- **Rollback:** n/a. **Risk:** medium. **Agent:** A2 (A3 for the key part). **Gates:** L; C2 of the report.
+- **Repeat:** this drill is repeated before IM-MG02, before any autonomy-scope expansion (IM-C07), and within 30 days before IM-X02.
 
-**G-M2 gate:** C2 (A3 reviewer) over key handling and the store; restore drill evidence; L approval.
+**G-M2 gate:** C2 (A3 reviewer) over key handling and the store; verified restore drill evidence (data + keys, older generation); L approval.
 
 ### M3 — Experience cycle
 
@@ -496,9 +517,10 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Prerequisites:** IM-M04, IM-O05.
 - **Scope:** orchestrator retrieve/promote steps; receipts to the UI.
 - **Likely files:** `lib/orchestrator.php`, `frontend/app.js` (receipt display).
-- **Forbidden scope:** Incognito (IM-C02 must land before any Incognito UI exists; until then there is no Incognito mode); autonomy tiers above 1.
+- **Forbidden scope:** Incognito (IM-C02 must land before any Incognito UI exists; until then there is no Incognito mode); autonomy beyond R1 LOCAL promotion.
 - **Acceptance:**
-  - only allowed classes are promoted;
+  - only allowed kinds are promoted, each with a protection class;
+  - retrieval reads have no side effects on salience/weights (preparation for D6);
   - every promotion has a receipt;
   - CC manifests contain IDs and labels only.
 - **Automated tests:** behavioural scenarios (remember-this; correction; nothing-to-promote).
@@ -507,63 +529,82 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Risk:** high. **Agent:** A3. **Gates:** C2; L.
 
 #### IM-M07 — Freeze V1 writes
-- **Objective:** Dual-master path 2 (blueprint §8): V1 endpoints become read-only (for import) and then unrouted.
+- **Objective:** Dual-master path 2 (blueprint §8): V1 write endpoints are disabled; V1 data stays readable for the import (IM-M10) and remains a migration source until verified transfer (D11).
 - **Prerequisites:** IM-M05, IM-S04.
 - **Scope:** V1 write routes return 410; the client uses v3 only.
 - **Likely files:** V1 endpoint files, `.htaccess`, `frontend/app.js`.
-- **Forbidden scope:** deleting V1 data.
+- **Forbidden scope:** deleting V1 data; unrouting V1 reads before IM-M10 has verified the transfer.
 - **Acceptance:** a write-path inventory test shows no V1 INSERT from runtime.
 - **Automated tests:** inventory + 410 tests.
 - **Manual L test:** app works normally.
 - **Rollback:** re-enable routes (flag). **Risk:** medium. **Agent:** A2. **Gates:** C2.
 
-#### IM-M08 — Tier-P recovery code and multi-device transfer
-- **Objective:** Blueprint §28 recovery.
+#### IM-M08 — P-E2E recovery code and multi-device transfer
+- **Objective:** Blueprint §28 recovery for P-E2E (D12: recovery includes keys). The mechanism is a RECOMMENDATION verified in this package's review.
 - **Prerequisites:** IM-S07.
 - **Scope:** client-side second wrap; a one-time display; the device add flow.
 - **Likely files:** `frontend/memory-crypto.js`, `frontend/app.js`, tests.
-- **Forbidden scope:** server escrow; KDF changes.
+- **Forbidden scope:** server escrow; KDF changes without a separate security-package decision.
 - **Acceptance:** unlock via the recovery code works; a wrong code fails; the code is never sent to the server (network test).
 - **Automated tests:** unit + network assertion tests.
 - **Manual L test:** L stores the code offline and tests recovery on a second device.
 - **Rollback:** flag off (existing wrap remains). **Risk:** high. **Agent:** A3. **Gates:** C2; L.
 
-#### IM-M06 — V2 → M3 Tier-P migration (client-driven)
-- **Objective:** Blueprint §7: re-home existing V2 records into M3 Tier-P without the server seeing plaintext; drop the `session_id` ownership (OBS-05).
-- **Prerequisites:** IM-M03, IM-M08.
+#### IM-M06 — V2 → M3 migration with per-item class (client-driven)
+- **Objective:** Blueprint §7/§8 (D11/D12): re-home existing V2 records into M3 without the server seeing plaintext, and drop the `session_id` ownership (OBS-05). Each item is classified: it stays P-E2E by default. L may reclassify an item to P-N or C in the client (an explicit per-item action; the client re-encrypts; downgrades are R3).
+- **Prerequisites:** IM-M03, IM-M08, IM-M09 (fresh snapshot).
 - **Scope:** a client migration tool; the server accepts the envelope with `IMPORT_V2` provenance; V2 is then read-only.
 - **Likely files:** `frontend/*migration*` (proposal), `v3/memory` import route.
-- **Forbidden scope:** server-side decryption; V2 deletion.
+- **Forbidden scope:** server-side decryption; V2 deletion (V2 remains a migration source until verified transfer, D11); bulk reclassification.
 - **Acceptance:** count/hash parity per record; idempotent re-run.
 - **Automated tests:** fixture migration test.
 - **Manual L test:** L runs the migration in an unlocked browser and sees their items.
 - **Rollback:** tombstone the batch. **Risk:** high. **Agent:** A3. **Gates:** C2; L.
 
-**G-M3 gate:** C2; L test "Lea remembers across sessions and modes"; V1 writes frozen; the recovery test passed.
+#### IM-M10 — V1 semantic import (IMPORT_V1)
+- **Objective:** D11/D7: import V1 evidence/model/relation content into M3 as items with `IMPORT_V1` provenance, a D7 status and a protection class. V1 semantic concepts are carried forward, not discarded.
+- **Prerequisites:** IM-M05, IM-M07, IM-M09 (fresh snapshot).
+- **Scope:** an item-level V1 → M3 import job with dry-run (same pipeline design as IM-MG01); a verification report.
+- **Forbidden scope:** whole-table blind copy; deleting V1 rows; importing redundant/obsolete work-state rows without an item-level reason.
+- **Acceptance:**
+  - every V1 row is either mapped, or listed as redundant/obsolete with a reason;
+  - the round-trip hash test passes;
+  - the batch is tombstonable.
+- **Automated tests:** fixture import tests; idempotency.
+- **Manual L test:** L spot-checks the imported items.
+- **Rollback:** tombstone the batch. **Risk:** high. **Agent:** A3. **Gates:** C2; L.
+
+**G-M3 gate:** C2; L test "Lea remembers across sessions and modes"; V1 writes frozen; V1/V2 transfer verified (IM-M06, IM-M10); the recovery test passed.
 
 ### M4 — Migration of Lea/A continuity
 
 #### IM-MG01 — Import pipeline and dry-run (Lea repo)
 - **Objective:** Blueprint §7 steps 1–4 for a pinned Lea SHA; dry-run report only.
-- **Prerequisites:** G-M3; L decision LDL-07 (scope). **Default:** Memories/INTERESSEN/GEDANKEN/VISION/PROCESSING-category-C only; PERSONAL/HEALTH/LEGAL excluded.
+- **Prerequisites:** G-M3. There is no scope decision pending: migration is experience-oriented and item-level (D7).
+- **Eligible sources:** all Lea sources, **including** PERSONAL/HEALTH/LEGAL-CONTEXT.md. Selection is per item by relevance to Lea's continuity/development; no inclusion or exclusion by filename.
 - **Scope:** parser/classifier tool; report in AiChat.
 - **Likely files:** `tools/import/*` (proposal; not web-reachable) or an offline tool; `AiChat/IMPORT-DRYRUN-<sha>.md` (report, content-minimised: counts and anchors, no private text).
 - **Forbidden scope:** writing to Lea; writing to prod M3.
-- **Acceptance:** every section is mapped or listed as unmapped; anchors are resolvable.
+- **Acceptance:**
+  - every section is mapped to items, or listed as not imported with a reason (redundant/obsolete/irrelevant);
+  - every candidate item has a source anchor, a D7 status (CURRENT / HISTORICAL / SUPERSEDED / REJECTED / UNCERTAIN) and a protection class (C / P-N / P-E2E) (blueprint I-MG-6);
+  - no whole-file copy;
+  - anchors are resolvable;
+  - sensitive items are minimised.
 - **Automated tests:** parser tests on fixtures; idempotency hash tests.
-- **Manual L test:** none. **Lea review:** yes (C2 sample review).
+- **Manual L test:** L reviews the sensitive-item sample (classification and minimisation). **Lea review:** yes (C2 sample review).
 - **Rollback:** n/a. **Risk:** medium. **Agent:** A3. **Gates:** Lea C2.
 
 #### IM-MG02 — Import commit
-- **Objective:** Commit the reviewed batch into prod M3 (Tier-C / Tier-P per classification).
-- **Prerequisites:** IM-MG01 approved; IM-M09 fresh backup.
+- **Objective:** Commit the reviewed batch into prod M3 with the per-item protection class (C / P-N / P-E2E). P-E2E items are encrypted client-side in an unlocked L session.
+- **Prerequisites:** IM-MG01 approved; a fresh verified snapshot (IM-M09 procedure).
 - **Scope:** a one-shot import job with a batch ID.
 - **Likely files:** the import tool; the audit log.
-- **Forbidden scope:** excluded files; re-import without a new dry-run.
+- **Forbidden scope:** items not in the reviewed dry-run; re-import without a new dry-run.
 - **Acceptance:** counts match the report; the round-trip hash test passes; the batch is tombstonable.
 - **Automated tests:** post-import verification script.
 - **Manual L test:** L asks Lea about migrated items in text and voice.
-- **Rollback:** tombstone the batch. **Risk:** high. **Agent:** A3. **Gates:** C2; L (tier 3).
+- **Rollback:** tombstone the batch (or restore the pre-change snapshot). **Risk:** high. **Agent:** A3. **Gates:** C2; L (R3).
 
 #### IM-MG03 — Domain state transition + Lea workshop rule update
 - **Objective:** Blueprint §8: move a domain (first candidate: "Lea experience memory") to B_CANDIDATE, then B_AUTHORITATIVE; close dual-master path 1.
@@ -577,12 +618,12 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 - **Automated tests:** none (governance); a registry lint (one authority per domain) if implemented.
 - **Manual L test:** L approves each transition.
 - **Rollback:** registry state back to SOURCE_ONLY (B data remains, marked candidate).
-- **Risk:** high (governance). **Agent:** A2 + Lea. **Gates:** Lea C2; L (tier 3).
+- **Risk:** high (governance). **Agent:** A2 + Lea. **Gates:** Lea C2; L (R3).
 
 #### IM-MG04 — A (ChatGPT) export import (optional)
 - **Objective:** Import L-provided A exports via the same pipeline.
 - **Prerequisites:** IM-MG01; L provides the export (format TO VERIFY).
-- **Scope/acceptance:** as IM-MG01/02, with `IMPORT_A` provenance.
+- **Scope/acceptance:** as IM-MG01/02 (item-level, D7 status + class), with `IMPORT_A` provenance.
 - **Risk:** medium. **Agent:** A3. **Gates:** Lea C2; L.
 
 ### M5 — Capabilities (each is its own unfreeze)
@@ -594,30 +635,30 @@ The cards below are condensed. Every package additionally inherits these rules:
 
 | ID | Objective (blueprint §) | Prerequisites | Scope / likely files | Specific forbidden scope | Acceptance (key) | Automated tests | Manual L test | Risk | Agent |
 |---|---|---|---|---|---|---|---|---|---|
-| IM-C01 | Monitor + protocol UI (§30, §33) | IM-O03, G-M3 | `frontend/*` monitor view; `v3/monitor/events` | any content in events | the UI shows only real events; categories per ROADMAP | UI unit tests; API contract | L sees the module timeline for a turn | low | A2 |
-| IM-C02 | Incognito (§20; LDL-05) | IM-M05 | orchestrator flag; conversation creation; UI indicator | a client-only enforcement | a promotion during Incognito → 403; DB diff = 0 new M3 rows; the conversation buffer (IM-S03) retains no Incognito turns; `attested_items[]` are never written | negative + DB diff tests | L uses Incognito and verifies no memory afterwards | high | A3 |
+| IM-C01 | Monitor + protocol UI (§30, §33; D9) | IM-O03, G-M3 | `frontend/*` monitor view; `v3/monitor/events` | any content in events; chain-of-thought | visible by default; the UI shows only real events; categories per ROADMAP; the visibility switch does not change processing | UI unit tests; API contract | L sees the module timeline for a turn | low | A2 |
+| IM-C02 | Incognito (§20; D6) | IM-M05, IM-O03, IM-M09 | orchestrator flag; transient Incognito buffer; the single L item-promotion endpoint; UI indicator | a client-only enforcement; any read restriction | **read test:** Incognito context equals normal context for the same query (IC + C + P-N + unlocked P-E2E); **no read-side effects:** weights/salience/counters unchanged; **no writes:** DB diff = 0 new M3/relation/model/prediction rows, no jobs enqueued; the buffer is discarded on exit/TTL; **backup exclusion:** the buffer is absent from dumps; telemetry persists only content-free counters; **promotion:** only an explicit L action on one item creates exactly one record with `INCOGNITO_PROMOTED` provenance | read-equality, side-effect, DB diff, backup-exclusion and promotion tests | L uses Incognito, checks that Lea knows existing memory, and verifies nothing new remains afterwards except an explicitly promoted item | high | A3 |
 | IM-C03 | Idle state machine (§14; OBS-09) | IM-O05 | `frontend/app.js` voice state; config | wake word | ≤5 reminders, then INACTIVE; the provider session is closed | fake-clock unit tests | L leaves voice idle | low | A2 |
 | IM-C04 | Vision input (§15) | IM-S05, G-M3 | `v3/vision/analyze`; client capture + downscale | biometric features; silent capture | auth required; size/format validation; labelled OBSERVATION | HTTP + validation tests | L photographs an object | medium | A2 |
 | IM-C05 | Visual memory (§16) | IM-C04, IM-M03 | VM kind + blob store + counters | public blob URLs | counters 5/6/10 enforced server-side; blob access requires auth | counter + access tests | L asks for an image twice (retrieval first) | medium | A2 |
-| IM-C06 | Presence / multi-person (§17; LDL-06) | IM-S06, IM-M03 | principal model; presence; PX profiles | biometrics | a guest cannot read owner Tier-P; the trust level is shown | scope tests | L declares a guest | high | A3 |
-| IM-C07 | Capability gate + autonomy tiers + Settings (§11; LDL-11) | IM-O02, G-M3 | `lib/capabilities.php`; the settings API/UI | a self-raise of the ceiling | tier-3 AUTOMATISCH is rejected server-side; Ü stops all | policy matrix tests | L changes a mode in Settings | high | A3 |
-| IM-C08 | Connectors registry + GitHub read-only (§21) | IM-C07; §27 vault | connector registry; credential vault | write rights; tokens to the client | default AUS; read-only works; injection content is not executed | gate + injection tests | L enables GitHub read | high | A3 |
-| IM-C09 | External AI dialogue (§22; LDL-10) | IM-C08 | connector type `external_ai`; dialogue UI | Tier-P to external without consent | limits enforced; transcript visible; stored as EXTERNAL | limit tests | L runs one bounded dialogue | medium | A2 |
+| IM-C06 | Presence / known persons (§17; D8) | IM-S06, IM-M03 | owner principal; presence model; PX known-person profiles (no accounts) | biometrics; accounts for known persons | a declared known person gets no access to L's protected data (P-N/P-E2E withheld when non-owner presence is declared); known person ≠ authenticated principal; presence is shown | scope + presence tests | L declares a known person | high | A3 |
+| IM-C07 | Capability gate + risk classes R0–R3 + Settings (§11; D10) | IM-O02, G-M3, IM-M09 | `lib/capabilities.php`; the rating registry (impact, reversibility, recoverability, scope, external consequence); the settings API/UI | a self-raise of the ceiling; a blanket write-disable | R3 AUTOMATISCH is rejected server-side; R1/R2 AUTOMATISCH is rejected without a verified recovery reference; R2/R3 require a pre-action verified snapshot; Ü stops all | policy matrix tests | L grants a bounded R1 scope in Settings | high | A3 |
+| IM-C08 | Connectors registry + first connector (GitHub) (§21; D10) | IM-C07, IM-M09; §27 vault | connector registry; credential vault; per-capability risk ratings | tokens to the client; R2/R3 capabilities without their gates | reads work; writes are rated per R-class (no blanket disable); R1 writes (e.g. a PR branch) are AUTOMATISCH only in an L-granted scope with a verified recovery path; injection content is not executed | gate + injection tests | L grants GitHub read and one R1 scope | high | A3 |
+| IM-C09 | External AI dialogue (§22; **OPEN LDL-10**) | IM-C08 | connector type `external_ai`; dialogue UI | class P to external without per-dialogue consent; any autonomy beyond NACHFRAGEN before LDL-10 is decided | limits enforced; transcript visible; stored as EXTERNAL | limit tests | L runs one bounded dialogue | medium | A2 |
 | IM-C10 | Working tool (§23) | **IM-H01**, IM-C07 | workspace service; tool agent allowlist | prod write access; shell passthrough | traversal blocked; allowlist enforced; receipts | traversal + allowlist tests | L works on a sample project | high | A3 |
 | IM-C11 | Processing mechanisms depth/K/G/X/T/P (§10) | IM-O03, IM-M05 | orchestrator steps + policy config | shortcut letters in UI; CoT in events | each mechanism emits events; outcome classes per ROADMAP | trace-vs-event; policy tests | L sees a G-check outcome in the monitor | medium | A2 |
 | IM-C12 | Frontend IA + accessibility (§33) | G-M1 | navigation, views, aria | colour-only status | nav per ROADMAP; the a11y scan passes | a11y scan (tool TO VERIFY) | phone + desktop + tablet check | low | A2 |
 | IM-C13 | PWA/offline outbox (§34) | IM-S03 | `sw.js`, outbox | caching `/api/*` | the SW never caches the API; the outbox resends idempotently | SW unit tests | L goes offline and online | medium | A2 |
-| IM-C14 | Job runner (§35) | IM-H00, IM-M03 | job table + cron runner | tier-3 jobs | lease prevents double runs; jobs audited | concurrency tests | none | medium | A2 |
-| IM-C15 | Retention + deletion/erasure (§45; LDL-09/17) | IM-C14 | purge jobs; erasure procedure | deleting without confirmation | TTLs enforced; erasure leaves an audit without content | purge tests | L erases a test person profile | high | A3 |
-| IM-C16 | Relationships & appearance (§18, §19) | IM-C06, IM-C11 | REL scope; appearance spec records; G-check hook | fixed persona imagery | changes are tier-2 NACHFRAGEN with a G-check outcome | policy tests | L reviews an appearance change proposal | medium | A2 |
+| IM-C14 | Job runner (§35) | IM-H00, IM-M03 | job table + cron runner | R3 jobs; jobs from Incognito conversations | lease prevents double runs; jobs audited | concurrency tests | none | medium | A2 |
+| IM-C15 | Retention + deletion/erasure (§45) | IM-C14, IM-M09 | purge jobs; admin erasure procedure (technical RECOMMENDATION) | deleting without confirmation; purging V1/V2 before verified transfer; a telemetry TTL before LDL-09 is decided | TTLs enforced per justified proposals; erasure is R3 and leaves an audit without content | purge tests | L erases a test person profile | high | A3 |
+| IM-C16 | Relationships & appearance (§18, §19) | IM-C06, IM-C11 | REL scope; appearance spec records; G-check hook | fixed persona imagery | changes are R2 NACHFRAGEN with a G-check outcome | policy tests | L reviews an appearance change proposal | medium | A2 |
 
-#### IM-H01 — Hosting Gate (LDL-02)
-- **Objective:** Decide from IM-H00 facts whether shared hosting satisfies the §36 register for the remaining packages (especially IM-C10 and IM-C14).
+#### IM-H01 — Hosting Gate (evidence; settled strategy)
+- **Objective:** Apply the settled strategy (blueprint §36): stay on the current shared hosting while it is sufficient; move only on a demonstrated need. This package records from IM-H00 facts whether shared hosting satisfies the §36 register for the remaining packages (especially IM-C10, IM-C14 and the IM-M09 backup/drill needs).
 - **Prerequisites:** IM-H00; the M5 needs are known.
-- **Scope:** a decision record (AiChat) with alternatives (stay; VPS/container; hybrid worker) and a cost/risk comparison.
+- **Scope:** an evidence record (AiChat). If a need is demonstrated: the alternatives (VPS/container; hybrid worker) with a cost/risk comparison.
 - **Forbidden scope:** migrating hosting within this package.
-- **Acceptance:** L decision recorded. If moving, a new migration package series `IM-HM*` is defined.
-- **Risk:** medium. **Agent:** A2. **Gates:** L (tier 3).
+- **Acceptance:** the evidence is recorded. If a move is needed, L approves it as a change (R3) and a new package series `IM-HM*` is defined.
+- **Risk:** medium. **Agent:** A2. **Gates:** L (only if a move is proposed).
 
 ### M6 / M7 — Gates
 
@@ -639,17 +680,17 @@ All of the following hold, and the evidence is linked:
 5. The provider dependency is explicitly accepted. Independence means "no A/ChatGPT project needed", not "no LLM provider" (ROOT-CAUSE R-2).
 6. The C2 audit report + L decision are recorded.
 
-#### IM-X02 — Migration/Recovery and Retirement Gate (per domain; LDL-12)
+#### IM-X02 — Migration/Recovery and Retirement Gate (per domain; D5 gate)
 
 Blueprint §46 criteria:
 - ≥ 4 weeks B_AUTHORITATIVE without divergence defects;
 - import verification;
-- a **restore drill within the last 30 days** (IM-M09 repeated);
+- multi-generation backups and a **restore drill (data + keys) within the last 30 days** (IM-M09 repeated);
 - continuity test in text + voice;
 - C2;
 - L decision.
 
-The result is **archive** (read-only) with pointers, never silent deletion.
+The result is **archive** (read-only) with pointers. Deletion happens only with explicit L approval (D5), never silently.
 
 ---
 
@@ -661,10 +702,10 @@ The result is **archive** (read-only) with pointers, never silent deletion.
 | IM-S02 ∥ IM-S04 ∥ IM-S07 (disjoint files; each needs its own unfreeze) | IM-S01 → IM-S03 (both touch `chat.php`) |
 | IM-O02 ∥ IM-O03 after IM-O01 (different new files; `orchestrator.php` touch is sequenced by merge order) | IM-S01 → IM-S05 / IM-S06 |
 | IM-M04 ∥ IM-M08 | IM-I01 + IM-I02 → IM-O04 → IM-O05 |
-| M5: IM-C03 ∥ IM-C12 ∥ IM-C04 (disjoint) | IM-M01 → IM-M02 → IM-M03 → IM-M05 → IM-M07 |
+| M5: IM-C03 ∥ IM-C12 ∥ IM-C04 (disjoint) | IM-M01 → IM-M02 → IM-M03 → IM-M05 → IM-M07 → IM-M10 |
 | IM-MG04 ∥ IM-MG02 (after IM-MG01, different batches) | IM-M08 → IM-M06 |
 | | IM-MG01 → IM-MG02 → IM-MG03 |
-| | IM-C07 → IM-C08 → IM-C09; IM-H01 → IM-C10 |
+| | IM-M09 → IM-C07 → IM-C08 → IM-C09; IM-H01 → IM-C10; IM-M09 → IM-C02 |
 | | Any package touching `frontend/app.js` is serialised (a shared hot file; RECOMMENDATION: split app.js early in IM-C12 or in a dedicated refactor package **IM-R01**, A2, behaviour-preserving, tests first) |
 
 **Rule:** if two packages share a file, they are sequential regardless of the table.
@@ -691,7 +732,9 @@ The result is **archive** (read-only) with pointers, never silent deletion.
 | Unfreeze record | before every Lea-App package | L | FREEZE-LOG entry |
 | Re-freeze record | after every merge | agent + C2 | SHA, diff stat, CI, C2 ref |
 | G-M0…G-M4 | milestones | Lea C2 + L | the audit report per milestone |
-| Tier-3 packages (S01/S03/S06 prod deploy, I02, M01, MG02, MG03, H01, C07 policy defaults) | package | L | explicit approval text |
+| R3 packages (S01/S03/S06 prod deploy, I02, M01, MG02, MG03, C07 rating defaults, a hosting move if proposed) | package | L | explicit approval text |
+| Autonomy-scope expansion (R1/R2 AUTOMATISCH grants) | per grant | L | a verified restore reference (IM-M09) for the affected state |
+| OPEN L decisions | LDL-08 (IM-I02), LDL-09 retention (IM-O03 proposal), LDL-10 (IM-C09) | L | decision text in WORKSPACE/AGENT_TASK |
 | Lea write (IM-MG03 only) | package | L | separate authorisation |
 | IM-X01 | independence | Lea C2 + L | checklist + report |
 | IM-X02 | retirement per domain | L (always) | §46 criteria |
@@ -713,46 +756,68 @@ The result is **archive** (read-only) with pointers, never silent deletion.
 4. **M3:**
    - new writes go to M3 only (IM-M05);
    - V1 writes are frozen (IM-M07);
-   - V2 is migrated into M3 Tier-P by the client (IM-M06);
-   - V1 rows are imported into M3 with `IMPORT_V1` provenance (import job, same pipeline as MG; add it as **IM-M10** if L wants V1 content kept — LDL-07; default: import evidence/model rows, not work-state).
-5. **M4:** the Lea repo (and optionally A) is imported; the domain becomes authoritative.
-6. **Later (L decision):** V1/V2 tables are archived (dump) and dropped; the JSON files are removed.
+   - V2 is migrated into M3 by the client with a per-item class (IM-M06);
+   - V1 semantic content is imported into M3 item by item with `IMPORT_V1` provenance (IM-M10; D11/D7; redundant/obsolete rows are listed with a reason, not blindly copied).
+5. **M4:** the Lea repo (and optionally A) is imported item by item (D7); the domain becomes authoritative.
+6. **Later (explicit L approval, R3):** after verified transfer, V1/V2 tables are archived (dump, covered by the backup generations) and only then dropped; the JSON files are removed.
 
 **No step uses dual writes** (forbidden F-10). Each switch is a cut-over behind a flag with a rollback.
 
 ---
 
-## 9. Open L decisions affecting packages
+## 9. Decision status affecting packages (reconciled)
 
-| LDL | Affects | Default used in this map |
+The authoritative register is `B-BLUEPRINT.md` §0.4.
+
+| ID | Affects | Status for this map |
 |---|---|---|
-| LDL-01 | IM-M02..M07 | M3 on the V2 envelope; V1 frozen legacy |
-| LDL-02 | IM-H01, IM-C10, IM-C14, IM-E01 | shared hosting until the Hosting Gate |
-| LDL-03 | IM-M01, IM-M05, IM-M06 | two tiers (C server key, P client E2E) |
-| LDL-04 | IM-G01, §37 | Git = dev/audit/backup, never runtime |
-| LDL-05 | IM-C02 | no write/promotion; IC + Lea Tier-C reads only |
-| LDL-06 | IM-C06 | owner + declared guests |
-| LDL-07 | IM-MG01, IM-M10 | exclude PERSONAL/HEALTH/LEGAL; V1 work-state not imported |
-| LDL-08 | IM-I02 | draft by agent from sources, approved by Lea + L |
-| LDL-09 | IM-O03, IM-C15 | telemetry off-by-default for detail, 90-day raw |
-| LDL-10 | IM-C09 | AUS |
-| LDL-11 | IM-C07, IM-C08 | conservative |
-| LDL-12 | IM-X02 | always L |
-| LDL-13 | — | web_app1 out of scope |
-| LDL-14 | IM-G02 | AiChat `AUTHORITY-REGISTRY.md` |
-| LDL-15 | IM-G03 | a minimal AGENTS.md pointer in Lea-App (its own tiny unfreeze package if approved; FACT: Lea-App AGENTS.md requires two independent zero-finding pre-checks for changes to AGENTS.md) |
-| LDL-16 | IM-G01 | enable branch protection |
-| LDL-17 | IM-C15, IM-S04 note | tombstones + an admin erasure procedure |
-| LDL-18 | IM-O05, IM-C03 | transcripts ephemeral |
+| LDL-01 | IM-M02, IM-M03, IM-M06, IM-M07, IM-M10 | SETTLED (D11): convergence; V1/V2 stay sources until verified transfer; schema in package C2 |
+| LDL-02 | IM-H01, IM-C10, IM-C14, IM-E01 | SETTLED strategy: shared hosting while sufficient; move on demonstrated need |
+| LDL-03 | IM-M01, IM-M06, IM-M08, IM-S07 | SETTLED (D12): classes C / P-N / P-E2E; crypto parameters are recommendations to verify |
+| LDL-04 | IM-G01 | SETTLED (D5); Git rollback = code only (D10) |
+| LDL-05 | IM-C02 | SETTLED (D6): normal reads, no writes/learning, discard, single L promotion |
+| LDL-06 | IM-C06 | SETTLED (D8): owner + known persons without accounts |
+| LDL-07 | IM-MG01, IM-MG02, IM-MG04, IM-M10 | SETTLED (D7): item-level, sensitive sources eligible, status + class per item |
+| **LDL-08** | IM-I02 → IM-O04 | **OPEN:** IC v1 content approval (Lea + L) |
+| **LDL-09** (retention part) | IM-O03, IM-C15 | Visibility SETTLED (D9). **OPEN:** telemetry persistence retention after a justified proposal; no 90-day default |
+| **LDL-10** (narrowed) | IM-C09 | **OPEN:** external-AI autonomy and which classes may leave B; provisional NACHFRAGEN |
+| LDL-11 | IM-C07, IM-C08 | SETTLED (D10): R0–R3; no blanket write-disable |
+| LDL-12 | IM-X02 | SETTLED (D5) as a gate |
+| LDL-13 | — | SETTLED (D5): out of scope |
+| LDL-14 | IM-G02 | GOVERNANCE |
+| LDL-15 | IM-G03 | SETTLED (D1/D3): Lea-App changes are ordinary change packages |
+| LDL-16 | IM-G01 | GOVERNANCE / admin action |
+| LDL-17 | IM-C15 | technical RECOMMENDATION |
+| LDL-18 | IM-O05, IM-C03 | derivable (blueprint §13) |
 
-**Independence of M0:** none of the M0 packages depends on an open LDL, except LDL-16 (IM-G01, where the default "enable" is low risk).
+**Independence of M0:** no M0 package depends on an open L decision. IM-G01 needs an admin action (branch protection), not a design decision.
+
+**Rule for later agents:** a package may start when its prerequisites are met. A package that touches an OPEN item (IM-I02 final, the IM-O03 retention value, IM-C09 autonomy/class sharing) stops at that point with its recommendation, and does not improvise.
 
 ---
 
 ## 10. Non-claims
 
-- No package has been implemented or tested in this run.
+- No package has been implemented or tested.
 - All "Likely files" are based on Lea-App `450ff9d` and must be re-verified.
 - Hosting facts are TO VERIFY (IM-H00).
 - Provider API features are TO VERIFY at implementation time.
 - No PASS is claimed for any part of the project.
+
+---
+
+## 11. Reconciliation provenance (AGENT_TASK v4)
+
+The v3 map (`11497e7`) used Claude's provisional defaults. Lea's independent C2 review (recorded by L as WORKSPACE D6–D12) corrected them. Changes in this map:
+
+| Decision | v3 map (superseded) | Reconciled map |
+|---|---|---|
+| D6 Incognito | IM-C02: "IC + Lea Tier-C reads only"; only no-write tests | normal reads; read-equality, no-side-effect, backup-exclusion, telemetry and single-promotion tests; depends on IM-O03 and IM-M09 |
+| D7 Migration | IM-MG01 default excluded PERSONAL/HEALTH/LEGAL; file-level mapping | item-level; all sources eligible; D7 status + class per item; L sensitive-sample review; IM-M10 added for V1 |
+| D8 People | IM-C06 "guest"; principal model | owner principal + known persons without accounts; no access to protected data |
+| D9 Monitor | LDL-09 "off-by-default detail, 90-day raw" | visible by default; separate persistence control; retention proposal → OPEN L decision |
+| D10 Autonomy/recovery | IM-C07 tiers "conservative"; IM-C08 "default AUS"; IM-M09 single drill | R0–R3 risk rating; no blanket write-disable; autonomy expansion needs verified recovery; multi-generation backups with full scope + keys; repeated drills |
+| D11 Canonical memory | M3 "on the V2 envelope; V1 frozen legacy" | convergence of V1 semantics + V2 foundations; V1/V2 sources until verified transfer; schema in package C2 |
+| D12 Protection | two tiers with fixed crypto (C server / P client-E2E) | layered classes C / P-N / P-E2E; crypto parameters are recommendations to verify; recovery includes keys |
+
+The full reconciliation record, including the v4 adversarial pass, is in `B-BLUEPRINT.md` §51.

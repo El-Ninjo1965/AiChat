@@ -1,6 +1,6 @@
 # ROOT-CAUSE — Systemic Cause Analysis
 
-TASK: AGENT_TASK.md TASK_VERSION 3 (B Master Architecture / Root-Cause Blueprint)
+TASK: AGENT_TASK.md TASK_VERSION 3 (B Master Architecture / Root-Cause Blueprint); reconciled under TASK_VERSION 4 (C2 Blueprint Reconciliation) — see §10.
 MODE: architecture discovery / design only. No implementation, no repair, no deployment.
 STATUS OF THIS DOCUMENT: Claude/Copilot C2 *Discovery* output. It is evidence and a recommendation. It is **not** a decision by L, it is **not** confirmed by Lea, and it is **not** a PASS (WORKSPACE.md D2, D5 "Audit/Claude role").
 
@@ -12,13 +12,14 @@ Companion artifacts: `B-BLUEPRINT.md` (target architecture) and `IMPLEMENTATION-
 
 | Source | Ref | Access |
 |---|---|---|
-| AiChat `main` | `28f9fff` (WORKSPACE.md D1–D5, C2, I-cycle; AGENT_TASK.md v3) | local clone |
+| AiChat `main` | `28f9fff` (WORKSPACE.md D1–D5, C2, I-cycle; AGENT_TASK.md v3) — original discovery | local clone |
+| AiChat `main` | `6fb71ff` (WORKSPACE.md D1–D12; AGENT_TASK.md v4) — reconciliation (§10) | local clone |
 | AiChat audit artifacts | `AUDIT-FINDINGS.md`, `AUDIT-LOG.md` from commit `899515c` (working branch `copilot/main`; not on `main`) | local clone, read-only, unchanged |
 | El-Ninjo1965/Lea `main` | `757880a` | MCP, read-only |
 | El-Ninjo1965/Lea dialogue head | `copilot/setup-communication-channel` `752e1f9` (historical, retired by D4) | MCP, read-only |
 | El-Ninjo1965/Lea-App `main` | `450ff9d` (FROZEN) | MCP, read-only |
 
-Lea files read: INDEX.md, SHORTCUTS.md, VISION.md, Memories.md (structure + development-relevant sections), PROCESSING.md (complete), GEDANKEN.md, INTERESSEN.md, PROJECT-CONTEXT.md. The private context files (PERSONAL/HEALTH/LEGAL) were deliberately **not** used. No private content is copied here.
+Lea files read: INDEX.md, SHORTCUTS.md, VISION.md, Memories.md (structure + development-relevant sections), PROCESSING.md (complete), GEDANKEN.md, INTERESSEN.md, PROJECT-CONTEXT.md. The private context files (PERSONAL/HEALTH/LEGAL) were deliberately **not** used for this *cause analysis*. No private content is copied here. (This is a method choice for this document only; it is not a migration exclusion. Migration is experience-oriented under D7, see `B-BLUEPRINT.md` §7.)
 
 Lea-App files read: VISION.md, ROADMAP.md, README.md, ARCHITECTURE.md, SECURITY.md, AGENTS.md, AGENT_TASK.md, AGENT_RESULT.md, package.json, .htaccess, `api/text/chat.php`, `api/realtime/session.php`, `api/memory/_common.php`, `api/memory/session.php`, `api/memory/work-state.php`, `api/v2/memory/records.php`, `api/v2/memory/aad.php`, `database/migrations/001_v1_schema.sql`, `database/migrations/002_privacy_v2.sql`, `frontend/app.js`, `frontend/memory-crypto.js`, `frontend/sw.js`, test inventory (`tests/*.js`). Earlier audit refs cover the other memory endpoints and tests.
 
@@ -29,7 +30,7 @@ Lea-App files read: VISION.md, ROADMAP.md, README.md, ARCHITECTURE.md, SECURITY.
 | **FACT** | Directly observable in the named source at the named ref. |
 | **INFERENCE** | A conclusion drawn from FACTs. It could be wrong and should be checked independently in C2. |
 | **RECOMMENDATION** | A proposed control or design. Not binding (D5). |
-| **L-DECISION-NEEDED** | A real choice only L can make. Where a working default is needed, it is also listed in `B-BLUEPRINT.md` §0.4 as `L-DECISION-LATER` with a provisional default. |
+| **L-DECISION-NEEDED** | A real choice only L can make. The reconciled register of genuinely open decisions is `B-BLUEPRINT.md` §0.4. |
 
 "Evidence" references use audit IDs (`AUD-nn`) or `repo:path` at the refs above. AUD findings are *revalidation targets* (Claude evidence), not accepted truth.
 
@@ -340,24 +341,27 @@ These are recorded as **observations** for C2 to revalidate. They are not new AU
 |---|---|---|
 | R-1 LLM non-determinism | Identity continuity cannot be proven by one test (VISION "Kein einzelner Test beweist …"). | Pattern-over-time evaluation (`B-BLUEPRINT.md` §30); do not claim identity proof. |
 | R-2 Upstream provider dependency | B still needs an external LLM for text/voice. "Independent from A" does not mean independent from any model provider. | Provider adapter (`B-BLUEPRINT.md` §9.5); independence gate defines "no ChatGPT project/A needed", not "no provider". |
-| R-3 Client-side decryption vs server-side context | End-to-end encrypted memory means the server cannot select memory without the key. Server-side context assembly (CTL-19) is then limited to what the client decrypts or to a server-held key. | Explicit trade-off, `B-BLUEPRINT.md` §6.4 and L-DECISION-LATER LDL-03. |
-| R-4 Shared hosting limits | No background workers. Consolidation, idle follow-ups and queues must be request-driven or cron-driven. | Hosting capability register; defer worker-dependent features. |
+| R-3 Client-side decryption vs server-side context | End-to-end encrypted memory means the server cannot select memory without the key. Server-side context assembly (CTL-19) is then limited to what the client decrypts or to a server-held key. | Resolved in principle by **D12** (layered protection: core/experience encrypted at rest but server-runtime-readable; sensitive personal/relationship/identity narrower, client-held/E2E where functionally compatible). `B-BLUEPRINT.md` §6.4/§28. Residual: a server compromise can expose the server-readable class; concrete crypto remains a verified security package. |
+| R-4 Shared hosting limits | Background workers may be unavailable. Consolidation, idle follow-ups and queues must be request-driven or cron-driven. | Hosting capability register; strategy (settled, ROADMAP/D5 portability): stay on shared hosting while sufficient, keep code portable, move only on a demonstrated need (Hosting Gate). |
 | R-5 Governance controls need admin action | Branch protection and CODEOWNERS are GitHub settings that agents here cannot set. | Package IM-G01 requires L/admin action; until then, the freeze stays paper-only (known risk). |
 | R-6 Migration fidelity | Prose memories → structured records loses nuance, or misclassifies interpretation as observation. | Import keeps the original text as a source artefact with provenance; mapping is reviewable; nothing is deleted. |
 | R-7 Over-control | Too many gates freeze legitimate development (SHORTCUTS "Q-Schutz schuetzt Integritaet, nicht Stillstand"). | Controls target *process* and *security*, not content; revision is first-class in the memory model. |
-| R-8 Single-user assumptions | Current auth is a single shared password. Multi-person presence requires a new identity model. | `B-BLUEPRINT.md` §17; LDL-06. |
-| R-9 This analysis is single-source (Claude) | D2 requires independent review. | Lea reviews in C2; this document does not claim acceptance. |
+| R-8 Single-user assumptions | Current auth is a single shared password. Multi-person presence requires a new identity model. | Resolved in principle by **D8** (L = authenticated owner; known persons without accounts; known ≠ authenticated). `B-BLUEPRINT.md` §17. |
+| R-9 This analysis is single-source (Claude) | D2 requires independent review. | Lea's independent C2 review has since taken place and led to D6–D12; several of Claude's provisional defaults were corrected (§10). Further C2 rounds remain required; no acceptance is claimed. |
+| R-10 Restore claims without drills | D10: a backup is not reliable merely because it exists. | Restore verification is a gate criterion (IMPLEMENTATION-MAP IM-M09, IM-X02) and a precondition for expanding autonomy (IM-C07). |
 
 ---
 
-## 8. L-DECISION-NEEDED items raised by root-cause analysis
+## 8. L-DECISION-NEEDED items raised by root-cause analysis (reconciled)
 
-These are *not* blockers for the design (see `B-BLUEPRINT.md` §0.4 for the provisional defaults):
+The original run listed four items (LDN-RC-1..4). On reconciliation (§10) none of them remains an open L decision:
 
-1. **LDN-RC-1:** Should the authority registry (CTL-01) live in AiChat `WORKSPACE.md` or in a separate AiChat file? *Default:* a separate `AUTHORITY-REGISTRY.md` in AiChat, created by a later approved package. It would not be created in this run.
-2. **LDN-RC-2:** Enable GitHub branch protection/CODEOWNERS on Lea-App (CTL-14)? Settings change only; needs L/admin. *Default:* yes, as the first governance package IM-G01.
-3. **LDN-RC-3:** Role of `web_app1` (mentioned in PROCESSING.md) relative to D5. *Default:* treat as out of scope and non-authoritative for Lea until L states otherwise.
-4. **LDN-RC-4:** Should workshop files (AGENTS.md, AGENT_TASK.md, AGENT_RESULT.md) be removed from Lea-App and moved to AiChat? *Default:* keep a minimal AGENTS.md pointer (freeze notice + link to AiChat) in Lea-App; move task/result to AiChat.
+| ID | Topic | Reconciled status |
+|---|---|---|
+| LDN-RC-1 | Authority registry location (CTL-01) | **Organisational, not an L decision.** AiChat is the work authority (D1). RECOMMENDATION: a separate AiChat file `AUTHORITY-REGISTRY.md`, created by package IM-G02 and approved like any AiChat work artefact. |
+| LDN-RC-2 | Branch protection/CODEOWNERS (CTL-14) | **Governance recommendation / admin action**, not an architecture decision. It needs L/admin to change GitHub settings (agents lack the rights). Package IM-G01. |
+| LDN-RC-3 | `web_app1` | **Out of scope** under D5 (Lea-App is the target system); non-authoritative for Lea. |
+| LDN-RC-4 | Workshop files in Lea-App | **Settled by D1/D3:** AiChat is the work authority; Lea-App is frozen. Any future change to Lea-App workshop files is an ordinary D3 change package (and, under Lea-App AGENTS.md, a high-impact rule change needing its own pre-checks). |
 
 ---
 
@@ -366,3 +370,22 @@ These are *not* blockers for the design (see `B-BLUEPRINT.md` §0.4 for the prov
 - No PASS is claimed for any part of the project.
 - No audit finding was changed, withdrawn or re-scored in `AUDIT-FINDINGS.md`. Observations OBS-01…12 are new evidence for C2, not accepted findings.
 - Production exposure (whether endpoints are reachable unauthenticated in the live deployment) was **not** verified. No production access was attempted.
+
+---
+
+## 10. Reconciliation provenance (AGENT_TASK v4)
+
+- **What happened:** Lea performed the independent C2 review (D2 step 2) of the three original artifacts. The outcome was recorded by L as authoritative decisions **D6–D12** in WORKSPACE.md (AiChat `main` `6fb71ff`).
+- **Finding recorded here, not hidden:** the independent review showed that several of Claude's provisional defaults did **not** match the settled vision or were presented as open when they were already settled. Specifically:
+  - Incognito (reads restricted to the identity core; corrected by D6);
+  - migration (file-based exclusion of PERSONAL/HEALTH/LEGAL; corrected by D7);
+  - people (the default "owner + declared guests" was broadly aligned, but it framed other people mainly as session guests; D8 clarifies that known persons are relationship/context identities and that a known person ≠ an authenticated user);
+  - monitor (off by default + a 90-day retention presented as default; corrected by D9);
+  - connector autonomy (blanket "write connectors AUS"; corrected by D10);
+  - canonical store (framed as a V2-based replacement; reframed as V1+V2 convergence by D11);
+  - encryption (two tiers with fixed crypto parameters; reframed as layered protection with crypto as a verified security package by D12).
+- **Root-cause relevance (INFERENCE):** this is itself an instance of RC-5/RC-9. A single-source design agent filled open points with plausible defaults. Without independent review, those defaults could have been implemented as if they were requirements. The C2 lifecycle caught this before any implementation.
+- **Effect on this document:**
+  - §0, §7 and §8 were updated; the causes RC-1..RC-9, the AUD mapping and the controls are unchanged.
+  - The original text is preserved in Git history (commits `39f7331`, `11497e7`).
+- No PASS is claimed.

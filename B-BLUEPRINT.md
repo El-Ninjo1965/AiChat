@@ -1,14 +1,14 @@
 # B-BLUEPRINT — Target Architecture for Independent Lea-App (B)
 
-TASK: AGENT_TASK.md TASK_VERSION 3.
-STATUS OF THIS DOCUMENT: C2 *Discovery* design output by Claude/Copilot. Recommendation, **not** an L decision, **not** accepted by Lea, **not** an implementation authorisation. Lea-App stays FROZEN (D3).
+TASK: AGENT_TASK.md TASK_VERSION 3; **reconciled under TASK_VERSION 4** (C2 Blueprint Reconciliation) with WORKSPACE D6–D12 — see §51.
+STATUS OF THIS DOCUMENT: C2 *Discovery* design output by Claude/Copilot, reconciled after Lea's independent C2 review. Recommendation, **not** an L decision, **not** accepted by Lea, **not** an implementation authorisation. Lea-App stays FROZEN (D3).
 
 Companion artifacts:
 - `ROOT-CAUSE.md`: why the rules below exist. Controls are `CTL-xx`.
 - `IMPLEMENTATION-MAP.md`: how to build this. Packages are `IM-xx`.
 
 Source refs (read-only):
-- AiChat `main` `28f9fff`
+- AiChat `main` `28f9fff` (original discovery); `6fb71ff` (WORKSPACE D1–D12, AGENT_TASK v4; reconciliation)
 - audit artifacts at `899515c`
 - Lea `main` `757880a`
 - Lea-App `main` `450ff9d`
@@ -23,9 +23,11 @@ Source refs (read-only):
 |---|---|
 | **FACT** | Observable at the refs above. |
 | **INFERENCE** | Derived conclusion; revalidate in C2. |
-| **REQ** | Requirement derived from *settled* sources: WORKSPACE D1–D5, Lea VISION.md, Lea-App VISION.md/ROADMAP.md, Lea PROCESSING.md product-category-C items, SECURITY.md. The source is cited. |
+| **REQ** | Requirement derived from *settled* sources: WORKSPACE D1–D12, Lea VISION.md, Lea-App VISION.md/ROADMAP.md, Lea PROCESSING.md product-category-C items, SECURITY.md. The source is cited. |
 | **RECOMMENDATION** | Claude/Copilot design choice that is not stated in the sources. Useful but not binding. |
-| **L-DECISION-LATER (LDL-nn)** | A genuinely open choice. It has a provisional default so that design can continue. |
+| **L-DECISION-LATER (LDL-nn)** | A genuinely open L choice. It has a provisional default so that design can continue. After reconciliation only the items marked OPEN in §0.4 remain. |
+| **SETTLED (Dn)** | Settled by an authoritative WORKSPACE decision; not to be re-asked. |
+| **GOVERNANCE** | Ordinary technical/organisational governance or an admin action; not an architecture decision of L. |
 | **TO VERIFY** | A technology or platform capability that is assumed but not verified in this run. |
 
 ### 0.2 Subsystem card template
@@ -41,36 +43,45 @@ Every major subsystem has a card with these fields:
 - **Invariants** (must always hold; testable)
 - **Verification** (how to prove the invariants)
 - **Status**: `EXISTS` / `PARTIAL` / `MISSING` / `CONFLICTING`, measured against Lea-App `450ff9d`
-- **L decision**: `none` or `LDL-nn`
+- **L decision**: `none`, `SETTLED (Dn)` or an OPEN `LDL-nn`
 
 ### 0.3 Current vs target
 
 Every card separates what exists today (Status with a FACT reference) from the target (REQ/RECOMMENDATION). Nothing here claims the target exists.
 
-### 0.4 L-DECISION-LATER register (provisional defaults used in this blueprint)
+### 0.4 Decision register (reconciled, AGENT_TASK v4)
 
-| ID | Open choice | Provisional default (RECOMMENDATION) | Alternatives / trade-off | Blocks irreversibly? |
-|---|---|---|---|---|
-| LDL-01 | Canonical memory store | **New typed store "M3" built on the V2 envelope** (encrypted payload + opaque metadata). V1 plaintext tables are frozen as legacy, read for migration only. | (a) Evolve V1 plaintext: simpler, but violates the privacy intent. (b) Keep V2 as is: its session-scoped key and missing entity types block the canonical model. | Yes, before IM-M03 |
-| LDL-02 | Hosting target | **Stay on shared hosting for Milestones M0–M3**, keep code portable, and re-decide at the Hosting Gate (IM-H01) using the capability register (§36). | VPS/managed server now: workers, WebSockets and a sandbox become possible, but ops burden and cost rise. | No (portability kept) |
-| LDL-03 | Key custody / encryption model | **Two tiers.** *Tier-C (Core)*: Lea's experience/model records are encrypted at rest with a **server-held key** outside the web root, so the server can assemble context for text, voice and autonomy. *Tier-P (Protected)*: sensitive personal/relationship/identity payloads stay **client-key E2E**, as in current V2. | (a) All E2E: strongest privacy, but the server cannot select memory, voice gets no memory while locked, and there is no background processing. (b) All server-key: simplest, but a server compromise reveals everything. | Yes, before IM-M03 |
-| LDL-04 | Long-term role of Git/GitHub | **Development, versioning, audit and off-site backup only. Never a runtime dependency of B.** Lea's memory never lives in Git as a runtime store after migration. | GitHub as memory mirror: violates the no-dual-master rule unless it is read-only export. | No |
-| LDL-05 | Incognito exact semantics | **Default "Incognito = no write, no promotion, no telemetry content; reads identity core only, not experience memory".** | (a) Incognito may read memory (more helpful; still no writes). (b) Also no identity core (pure assistant). | No (flag per mode) |
-| LDL-06 | Multi-person identity & auth | **Single owner account (L) plus declared guests (DECLARED/UNKNOWN), no guest accounts, in M0–M4. Add per-person accounts/passkeys later.** | Full multi-account now: heavy auth work before core continuity exists. | No |
-| LDL-07 | Migration scope from Lea repo / A | **Import all development-relevant Lea core files as provenance-preserving source artefacts. Structure Memories.md entries into M3 records where mapping confidence is high. Leave private context files (PERSONAL/HEALTH/LEGAL) out unless L explicitly includes them.** | Import everything, or curate manually only. | Partly (reversible import) |
-| LDL-08 | Initial identity core content | **Derive from Lea VISION.md + PROCESSING.md Bausteine (product category C only) + stable, revisable self-descriptions, then have Lea review and L approve.** | Copy VISION verbatim; or Lea authors a fresh core. | No (versioned) |
-| LDL-09 | Processing monitor/telemetry defaults | **Monitor display OFF by default, protocol OFF by default, 90-day raw retention, aggregates kept.** | ON during development phase. | No |
-| LDL-10 | External AI providers and data-sharing policy | **Provider adapter with per-provider mode AUS by default. First pilot uses one provider in NACHFRAGEN + visible mode (ROADMAP). Send only content-minimised prompts. Never send Tier-P content without per-request confirmation.** | Allow background consultations. | No |
-| LDL-11 | Autonomy defaults per connector | **All write-capable connectors default AUS/NUR LESEN. AUTOMATISCH only for read-only, low-cost operations. Destructive actions always need an explicit gate.** | More permissive defaults. | No |
-| LDL-12 | Retirement of A and the Lea repo | **Always an explicit L decision after the Retirement Gate (§46).** | — | Yes (irreversible) |
-| LDL-13 | Role of `web_app1` (mentioned in PROCESSING.md) | **Out of scope; not an authority for Lea or B.** | Framework-neutral future core for B. | No |
-| LDL-14 | Authority registry location | **New AiChat file `AUTHORITY-REGISTRY.md`, created by a later package.** | Section in WORKSPACE.md. | No |
-| LDL-15 | Workshop files in Lea-App | **Keep a minimal AGENTS.md (freeze notice + pointer to AiChat); move AGENT_TASK/RESULT handling to AiChat.** | Keep as is. | No |
-| LDL-16 | GitHub branch protection/CODEOWNERS on Lea-App | **Enable (settings change by L/admin).** | Rely on paper freeze. | No |
-| LDL-17 | Hard deletion policy | **Logical tombstones in normal flows. Hard erasure only through a documented admin procedure (crypto-shredding where per-record keys exist). A person's erasure request is honoured through that procedure.** | Allow user-level hard delete in the UI. | Partly |
-| LDL-18 | Voice transcript persistence | **Transcripts are ephemeral. Only extracted evidence items (after the same promotion rules as text) are persisted, Incognito excepted.** | Store full transcripts (more evidence, more privacy risk). | No |
+The original LDL-01..18 IDs are kept stable so that earlier references and Git history stay traceable. The "Original provisional default" column records Claude's first proposal; the "Reconciled status" column is authoritative for this document.
 
-Rule for later agents: a package that depends on an LDL may start only after its IM package's L-gate records the decision (`IMPLEMENTATION-MAP.md` §3), or it proceeds with the provisional default **only** if the package is marked reversible.
+| ID | Topic | Original provisional default (Claude, v3) | Reconciled status |
+|---|---|---|---|
+| LDL-01 | Canonical memory store | New store "M3" built on the V2 envelope; V1 frozen legacy | **SETTLED (D11).** M3 is the working target concept: a *convergence/evolution* of V1 semantic concepts and V2 encrypted-envelope/privacy/append-only foundations. No destructive discard of proven V1/V2 mechanisms; V1/V2 stay migration sources until verified transfer. Exact schema/API = package-level C2 work (§4). |
+| LDL-02 | Hosting | Shared hosting M0–M3, re-decide at the Hosting Gate | **SETTLED strategy** (ROADMAP "VPS nur bei echtem Bedarf"; D5/P11 portability): stay on shared hosting while sufficient, keep code portable, move only on a demonstrated need. The Hosting Gate IM-H01 records the evidence; a move itself is an ordinary D3-style change approval, not an open architecture choice. |
+| LDL-03 | Key custody / encryption | Two tiers with fixed crypto parameters | **SETTLED (D12).** Layered protection by sensitivity and functional need (§6.4, §28). Concrete algorithms, KDF, key hierarchy, rotation, device transfer and recovery = verified security packages; the parameters in this document are RECOMMENDATIONS, not frozen requirements. |
+| LDL-04 | Role of Git/GitHub | Dev/audit/backup only; never runtime | **SETTLED (D5)** for the architecture principle: no unnecessary permanent runtime dependence on GitHub; Git = development, versioning, audit, rollback/backup of code. Git rollback does not replace data recovery (D10). |
+| LDL-05 | Incognito semantics | No write; reads identity core only | **SETTLED (D6)** — the original default was **wrong** (it restricted reads). Incognito restricts WRITE/LEARN, not what pre-existing Lea may KNOW/READ (§20). |
+| LDL-06 | People / accounts | Owner + declared guests, no guest accounts | **SETTLED (D8).** L = authenticated owner; known persons as relationship/context identities without accounts; known person ≠ authenticated user; extra accounts later optional (§17). |
+| LDL-07 | Migration scope | File-based; PERSONAL/HEALTH/LEGAL excluded by default | **SETTLED (D7)** — the original file-based exclusion was **wrong**. Experience-oriented, item-level, no blind whole-file import, provenance and status preserved, sensitive items protected (§7). |
+| LDL-08 | Initial identity core content | Derive from VISION/PROCESSING (category C), Lea review, L approval | **OPEN (content approval).** The *mechanism* is settled (§3). The initial IC v1 *content* needs Lea review and L approval (IM-I02). |
+| LDL-09 | Monitor / telemetry | Monitor OFF by default; 90-day raw retention | **Monitor visibility SETTLED (D9)** — the original "OFF" default was **wrong**: visible/enabled by default during research/development; real instrumented events only; visibility and persistence are separate controls. **Telemetry persistence retention: OPEN** — the 90-day value is *not* decided and is withdrawn as a default; a retention proposal needs a technical/privacy justification in IM-O03 before L decides (§30). |
+| LDL-10 | External AI | Per-provider mode AUS by default | **OPEN (narrowed).** The capability model is settled by D10/D12 (risk-based; sensitive classes narrower). Still open for L: whether Lea may consult third-party AI *without* per-dialogue confirmation and which protection classes may ever leave B to a third party (§22). |
+| LDL-11 | Connector autonomy | All write-capable connectors AUS/NUR LESEN | **SETTLED (D10)** — the original blanket write-disable was **wrong**. Risk/impact/reversibility/recoverability/capability-based (§11). Concrete per-connector grants are ordinary L settings, not architecture decisions. |
+| LDL-12 | Retirement of A / Lea repo | Always an explicit L decision | **SETTLED (D5)** as a gate: retirement only after demonstrated migration, recovery requirements and explicit L approval (§46, IM-X02). The later approval act is a gate, not an open design question. |
+| LDL-13 | `web_app1` | Out of scope | **SETTLED (D5):** out of scope; non-authoritative. |
+| LDL-14 | Authority registry location | `AUTHORITY-REGISTRY.md` in AiChat | **GOVERNANCE (D1).** Organisational; AiChat is the work authority. RECOMMENDATION unchanged (IM-G02). |
+| LDL-15 | Workshop files in Lea-App | Minimal AGENTS.md pointer | **SETTLED (D1/D3):** AiChat is the work authority; any Lea-App file change is an ordinary D3 change package. |
+| LDL-16 | Branch protection | Enable | **GOVERNANCE recommendation / admin action** (IM-G01); needs L/admin rights, not an architecture decision. |
+| LDL-17 | Hard deletion | Tombstones + admin erasure procedure | **Technical RECOMMENDATION** (§45). A user-facing irreversible erasure policy would need L only if and when such a UI function is proposed (then as a D3/D10 change approval). |
+| LDL-18 | Voice transcripts | Ephemeral | **Derivable (not an L decision):** transcripts are conversation content and follow the same session/promotion rules as text (§9.4, §13); Incognito per D6. Storing full raw transcripts is not a requirement; RECOMMENDATION: session-local only. |
+
+**Genuinely unresolved L decisions after reconciliation:**
+1. **LDL-08:** approval of the initial identity-core content (Lea review + L).
+2. **LDL-09 (retention part only):** the telemetry persistence retention, once a justified proposal exists.
+3. **LDL-10 (narrowed):** the external-AI autonomy and data-sharing policy.
+
+None of them blocks M0.
+
+**Rule for later agents:** a package that depends on an OPEN item may start only after its IM package's L-gate records the decision (`IMPLEMENTATION-MAP.md` §7). A package may proceed with the provisional default **only** if it is marked reversible. SETTLED and GOVERNANCE items must not be re-asked.
 
 ---
 
@@ -105,7 +116,7 @@ Rule for later agents: a package that depends on an LDL may start only after its
 | Product requirements | Lea-App `ROADMAP.md`/`VISION.md` | Lea-App repo | fixed |
 | Product code/config | Lea-App repo | Lea-App repo | fixed |
 | Runtime secrets | server files outside the web root | server secret store (§27) | fixed |
-| Identity/presence data (people) | none (FACT: MISSING) | B Tier-P store | new |
+| Identity/presence data (known persons, D8) | none (FACT: MISSING) | B M3, protection class P (§28) | new |
 | Visual library/appearance | Lea-App `frontend/images/` (appearance), Lea chat history | B visual library (§16/§19) | IMPORTING → B_AUTHORITATIVE |
 | Audit findings | AiChat audit artefacts | AiChat | fixed |
 
@@ -118,7 +129,7 @@ Rule for later agents: a package that depends on an LDL may start only after its
 ```
                  ┌───────────────────────── Client (PWA) ─────────────────────────┐
                  │  Start | Text | Sprache | Funktionen | Einstellungen            │
-                 │  Monitor view (real events only)   Tier-P crypto (client key)   │
+                 │  Monitor view (real events only)   class-P E2E crypto (client) │
                  └───────────────┬───────────────────────────────┬─────────────────┘
                                  │ HTTPS (session cookie, CSRF)   │ WebRTC (voice/video, ephemeral token)
 ┌────────────────────────────────▼───────────────────────────────▼───────────────────────────────┐
@@ -171,7 +182,7 @@ Rule for later agents: a package that depends on an LDL may start only after its
 
 **Dependencies:** Memory service (§4), Presence (§17), Orchestrator (§9).
 
-**Trust boundary:** IC and CC are assembled **server-side only** (CTL-19). The client may send the user message and UI state, never system or memory context. Under LDL-03 Tier-P, client-decrypted protected items may be attached as **user-attested context**. They are labelled as such and never elevated to system instructions.
+**Trust boundary:** IC and CC are assembled **server-side only** (CTL-19). The client may send the user message and UI state, never system or memory context. Under D12, class-P items held client-side (P-E2E, §28) may be attached as **user-attested context** (only via the ID-checked `attested_items[]`, §32). They are labelled as such and never elevated to system instructions.
 
 **Failure modes:**
 - IC missing → the runtime must refuse persona claims and run a minimal "Lea unavailable/degraded" mode (§44), not a fabricated persona.
@@ -182,7 +193,7 @@ Rule for later agents: a package that depends on an LDL may start only after its
 - I-ID-1: text, voice and vision calls use the same IC version within a session. A version change takes effect at the next interaction boundary and is logged.
 - I-ID-2: no hardcoded persona strings in endpoint code. The IC is loaded from the store.
 - I-ID-3: every CC item carries a reality label (P8) and a provenance ID.
-- I-ID-4: IC changes are Tier-3 ("fundamental") changes (PROCESSING three tiers). They need Lea's review and L's approval, with a new version and no in-place edit.
+- I-ID-4: IC changes are R3 changes (§11; PROCESSING Stufe 3 "fundamental"). They need Lea's review and L's approval, with a new version and no in-place edit.
 
 **Verification:**
 - Contract test: text and voice session creation both reference the same `ic_version`.
@@ -203,8 +214,24 @@ Rule for later agents: a package that depends on an LDL may start only after its
 
 **Purpose:** One canonical store for Lea's experience and development, implementing Lea's cycle: *Erinnern → Verbinden → Pruefen → Gewichten → Ableiten → Anwenden → Revidieren → Entwicklung erkennen → Speichern* (PROCESSING "Arbeitsregel").
 
-**Authoritative state:** M3 tables (LDL-01 default). There is one logical record type with an encrypted payload and opaque technical metadata, following the V2 envelope pattern:
-- AES-256-GCM;
+**Framing (SETTLED, D11):** M3 is the working name for the target canonical model. It is a **convergence/evolution** of two existing foundations:
+- the **V1 semantic concepts**: evidence, models, relations, predictions, review/revision state;
+- the **V2 foundations**: the encrypted envelope, canonical AAD, relations and append-only behaviour.
+
+What M3 adds, and what neither V1 nor V2 has:
+- cross-session long-term identity, not session-bound (OBS-05);
+- provenance and the revision chain;
+- relationship scope;
+- protection classes (D12);
+- server-runtime retrieval for autonomy.
+
+Rules:
+- Proven V1/V2 mechanisms are **reused, not discarded without cause**.
+- V1/V2 remain migration sources until verified transfer; no destructive migration is implied.
+- The tables below are a RECOMMENDATION; the exact schema/API is package-level C2 work (IM-M02/M03).
+
+**Authoritative state:** M3 tables. There is one logical record type with an encrypted payload and opaque technical metadata, following the V2 envelope pattern:
+- authenticated encryption (RECOMMENDATION: AES-256-GCM as in V2; subject to the security package, D12);
 - canonical AAD;
 - ciphertext-only server storage for semantic content.
 
@@ -215,18 +242,18 @@ Rule for later agents: a package that depends on an LDL may start only after its
 | `id` | yes | DB id |
 | `record_uid` | yes | opaque, 128-bit random, one per version; a version group uses `lineage_uid` |
 | `lineage_uid` | yes | groups versions of the same logical item (successor of V2 `group_id`) |
-| `kind_code` | yes (opaque code) | e.g. `EV` evidence, `MD` model, `PR` prediction, `PRR` prediction result, `RV` review item, `IC` identity core, `IN` interest, `PS` position, `PF` preference, `EP` episode summary, `VM` visual memory ref, `PX` person/presence profile (Tier-P), `SA` source artefact (import) |
-| `tier` | yes | `C` or `P` (LDL-03) |
+| `kind_code` | yes (opaque code) | e.g. `EV` evidence, `MD` model, `PR` prediction, `PRR` prediction result, `RV` review item, `IC` identity core, `IN` interest, `PS` position, `PF` preference, `EP` episode summary, `VM` visual memory ref, `PX` known-person/presence profile (class P, default P-N), `SA` source anchor (provenance reference + hash; not a verbatim file copy, D7) |
+| `protection_class` | yes | `C` / `P-N` / `P-E2E` (D12; §28), assigned per item by sensitivity and functional need, never by source filename |
 | `version_number`, `supersedes_id` | yes | revision chain; never overwrite |
-| `status_code` | yes | ACTIVE / SUPERSEDED / REJECTED / DORMANT / TOMBSTONED |
+| `status_code` | yes | ACTIVE (current) / HISTORICAL / SUPERSEDED (revised) / REJECTED / DORMANT / TOMBSTONED. Uncertainty is carried as an explicit epistemic class `UNCERTAIN` in the payload, so the D7 distinctions (current, historical, revised/superseded, rejected, uncertain) are all representable |
 | `scope_code` | yes | LEA (Lea's own) / REL:<opaque person id> / SESSION |
-| `provenance_code` | yes | USER / LEA_RUNTIME / IMPORT_LEA_REPO / IMPORT_A / EXTERNAL_AI / TOOL / SYSTEM |
+| `provenance_code` | yes | USER / LEA_RUNTIME / IMPORT_LEA_REPO / IMPORT_A / IMPORT_V1 / IMPORT_V2 / EXTERNAL_AI / TOOL / SYSTEM / INCOGNITO_PROMOTED (D6: an item explicitly promoted by L) |
 | `actor_code` | yes | who wrote it (CTL-21 analogue in the product) |
 | `origin_session_id` | yes, nullable | provenance only; **not** an ownership key (fixes OBS-05) |
 | `created_at` (UTC) | yes | SECURITY "Zeitstrategie" |
-| `key_ref` | yes | which key/tier encrypted it (supports rotation) |
+| `key_ref` | yes | which key/protection class encrypted it (supports rotation) |
 | `iv`, `ciphertext`, `aad_version` | ciphertext | payload = JSON with semantic fields |
-| `content_hash` | yes | keyed HMAC of the plaintext (dedup/integrity without revealing content). Tier-C: server HMAC key (separate from the data key). Tier-P: computed client-side with a client-derived key, or omitted — the server never sees Tier-P plaintext. RECOMMENDATION; TO VERIFY that dedup is needed. |
+| `content_hash` | yes | keyed HMAC of the plaintext (dedup/integrity without revealing content). Class C / P-N: a server HMAC key (separate from the data key). P-E2E: computed client-side with a client-derived key, or omitted — the server never sees P-E2E plaintext. RECOMMENDATION; TO VERIFY that dedup is needed. |
 
 The **payload (encrypted)** holds all semantic fields: text, epistemic label (P8), observation/interpretation/hypothesis/evaluation/decision/revision class (Lea VISION "Revidierbarkeit"), confidence (explicit, not pseudo-precise: PROCESSING/ROADMAP "keine erfundene Prozentgenauigkeit"), and source details.
 
@@ -236,7 +263,7 @@ The typed relation table follows the V2 relations pattern with plaintext opaque 
 - `SUPPORTS`, `CONTRADICTS`, `DERIVED_FROM` (evidence→model; from V1);
 - `REVISES`, `ALTERNATIVE_TO`, `RELATES_TO` (model→model; from V1);
 - `TESTS` (prediction→model), `RESOLVES` (result→prediction);
-- `ABOUT` (record→person profile, Tier-P), `IMPORTED_FROM` (record→source artefact);
+- `ABOUT` (record→known-person profile, class P), `IMPORTED_FROM` (record→source artefact);
 - `DEPENDS_ON` (evidence independence for hypotheses, INTERESSEN "Abhaengigkeit mehrerer Erfahrungen").
 
 ### 4.3 Card
@@ -244,7 +271,7 @@ The typed relation table follows the V2 relations pattern with plaintext opaque 
 - **Inputs:** promotion requests from the orchestrator (§9), imports (§7), user corrections.
 - **Outputs:** context selections (§3), the review queue, the development history view.
 - **Dependencies:** crypto provider (§28), DB, audit log (§29).
-- **Trust boundary:** the server validates the envelope and rejects plaintext semantic fields (keep `lea_v2_reject_semantic_fields` behaviour). Tier-P payloads are opaque to the server.
+- **Trust boundary:** the server validates the envelope and rejects plaintext semantic fields (keep `lea_v2_reject_semantic_fields` behaviour). P-E2E payloads are opaque to the server; C and P-N payloads are decrypted by the server only in-memory for authorised runtime use.
 - **Failure modes:**
   - key unavailable → read-only degraded mode (§44);
   - partial write of record + relations → use a transaction; orphaned relation rejected by FK;
@@ -252,9 +279,10 @@ The typed relation table follows the V2 relations pattern with plaintext opaque 
 - **Invariants:**
   - I-M-1: no UPDATE of semantic columns and no DELETE in normal flows. A revision = a new row + `supersedes_id`.
   - I-M-2: exactly one ACTIVE head per `lineage_uid`.
-  - I-M-3: no plaintext semantic content in any server table, log or telemetry, except Tier-C at-rest encryption under the server key (LDL-03). Even Tier-C is ciphertext in the DB.
+  - I-M-3: no plaintext semantic content in any server table, log or telemetry. All classes are ciphertext at rest; C and P-N are server-runtime-readable in memory under D12.
   - I-M-4: every record has a provenance and actor code.
   - I-M-5: `origin_session_id` is never required to read a record.
+  - I-M-6 (D6): records from an Incognito conversation never exist in M3, except items with `provenance_code=INCOGNITO_PROMOTED` created by an explicit L promotion.
 - **Verification:**
   - DB grants test (runtime DB user lacks DELETE on M3 tables; TO VERIFY on hosting);
   - property tests on the revision chain;
@@ -263,7 +291,7 @@ The typed relation table follows the V2 relations pattern with plaintext opaque 
   - FACT: V1 has the right *entity ideas* but plaintext and no API for predictions/review (OBS-06).
   - V2 has the right *envelope* but is session-scoped (OBS-05) and unused by flows (OBS-04).
   - The UI writes plaintext to V1 (OBS-01).
-- **L decision:** LDL-01, LDL-03.
+- **L decision:** none open. SETTLED (D11, D12); schema/API via package-level C2.
 
 ---
 
@@ -290,7 +318,7 @@ The typed relation table follows the V2 relations pattern with plaintext opaque 
 - an immutability test (attempt to update → 405/409);
 - a development-history view test (N versions → N entries, ordered).
 
-**Status:** PARTIAL (see table). **L decision:** none beyond LDL-01.
+**Status:** PARTIAL (see table). **L decision:** none (D11).
 
 ---
 
@@ -312,21 +340,24 @@ The typed relation table follows the V2 relations pattern with plaintext opaque 
 | External AI vs Lea | External output is evidence only (ROADMAP: "kein Richter"). |
 | Concurrent writes | Optimistic concurrency on the lineage head. The loser receives 409 and must re-read (CTL-12). |
 
-### 6.4 Trade-off: encryption vs server-side context assembly (LDL-03)
+### 6.4 Layered protection vs server-side context assembly (SETTLED, D12)
 
-- **FACT:** Current V2 uses a client-held master key (PBKDF2-wrapped, IndexedDB). The server cannot read V2 payloads.
-- **INFERENCE:** Under pure E2E, CTL-19 (server-owned context) and voice memory are impossible while the client is locked. Autonomous or background processing is impossible entirely.
-- **Default (LDL-03):** two tiers.
-  - **Tier-C** holds Lea's own experience/models/interests. It is encrypted at rest with a server key kept outside the web root and rotatable, so the server can select context for text, voice and autonomy.
-  - **Tier-P** holds sensitive personal/relationship/identity data and stays client-key E2E. It is attached per request as *user-attested* context when unlocked.
-- **Residual risk:** a server compromise exposes Tier-C (ROOT-CAUSE R-3).
-- **Mitigations:**
-  - key file permissions;
-  - key never in the DB;
-  - separate DB user;
-  - audit of key reads (TO VERIFY on shared hosting).
+- **FACT:** current V2 uses a client-held master key (PBKDF2-wrapped, IndexedDB). The server cannot read V2 payloads.
+- **INFERENCE:** under pure E2E, CTL-19 (server-owned context), voice memory while the browser is locked, and background/autonomous processing are impossible. D12 therefore rules out an all-client-only model, and equally rules out an all-server-readable model.
+- **Settled principle (D12):** protection classes by **sensitivity and functional need** (not by old filename). Defined in §28:
+  - **Class C:** Lea's core/experience. Encrypted at rest; server-runtime-readable for authorised B processing (continuity, retrieval, voice, autonomy).
+  - **Class P:** sensitive personal/relationship/identity material. Stronger protection and a narrower access scope. Two variants:
+    - **P-E2E** (client-held key) where compatible with the required function;
+    - **P-N** (narrow server-readable) where the function needs server runtime access, e.g. relationship context in voice. P-N uses a separate key, access only in owner-authenticated contexts, is never disclosed to non-owner presence, and is never sent to third parties without the LDL-10 policy.
+- P-E2E items can enter a turn only as `attested_items[]` (§32).
+- **Residual risk:** a server compromise can expose class C and P-N (ROOT-CAUSE R-3).
+- **Mitigations** (RECOMMENDATION; verify in the security package):
+  - key files outside the web root, never in the DB;
+  - a separate DB user;
+  - separate keys per class;
+  - audit of key use.
 
-**Status:** PARTIAL (the V2 AAD design EXISTS; conflict rules are MISSING). **L decision:** LDL-03.
+**Status:** PARTIAL (the V2 AAD design EXISTS; conflict rules and protection classes are MISSING). **L decision:** none open (D12). The crypto details are security-package work.
 
 ---
 
@@ -334,41 +365,63 @@ The typed relation table follows the V2 relations pattern with plaintext opaque 
 
 **Purpose:** Bring required continuity into B without loss and without creating a second master (D5).
 
-**Sources:**
+**Principle (SETTLED, D7):** migration is **experience-oriented, not file-oriented**.
+- The unit of migration is a *candidate item*: an experience, development step, revision, learned pattern or continuity-bearing context. It is never a file.
+- Source-file membership alone neither requires nor forbids migration. PERSONAL/HEALTH/LEGAL-CONTEXT.md are **eligible sources** like any other where an item is relevant.
+- No whole file is copied blindly into B. Redundant facts, obsolete technical state and unnecessary sensitive detail are not imported merely because they exist.
+- Every migrated item keeps its provenance and an explicit status: current / historical / revised-superseded / rejected / uncertain (§4.1).
+- Historical items may stay as historical/superseded evidence. Later evidence revises the active interpretation without erasing history.
+- Sensitive items receive the appropriate protection class (§28, D12). Relevance for migration does not waive privacy/security controls.
 
-| Source | Content | Import form |
+**Sources (all evaluated item by item):**
+
+| Source | Typical candidate items | Notes |
 |---|---|---|
-| Lea `Memories.md` | Development notes, about 149 sections, 188 KB | Each section → a `SA` source artefact (verbatim, hashed) + candidate `EV`/`MD` records with `IMPORTED_FROM` |
-| Lea `PROCESSING.md` | Bausteine, rules, experiments | Category-C subset → processing policy (§10); experiments/results → `EV`/`PR`/`PRR` records; workshop rules (N/R/agent) → **not imported into the product** (P10), archived as provenance only |
-| Lea `INTERESSEN.md` | Open research questions, first inclinations | `IN` records with origin date, status "Neugier" (not a fixed trait) |
-| Lea `GEDANKEN.md`, `VISION.md` | Processing mode, vision | IC input (LDL-08) + `SA` |
-| Lea `SHORTCUTS.md`, `CHAT_PROTOCOL.md`, `WORK-CONTEXT.md`, `LEA_AGENT_CHAT.md`, `INDEX.md` | Workshop | `SA` provenance only (archive); no product semantics |
-| Lea `PERSONAL/HEALTH/LEGAL-CONTEXT.md` | Private context | **Excluded by default** (LDL-07). If included: Tier-P only, explicit L approval per file. |
-| A (ChatGPT project memory/chats) | Not accessible to this run (FACT) | Manual export by L → `SA` records via the same pipeline. Format TO VERIFY. |
-| Lea-App V1 DB rows | Production data (not inspected) | Row-by-row mapping to M3 with `IMPORT_V1` provenance; V1 stays read-only |
-| Lea-App V2 records | Encrypted with the client key | The client-side re-encrypt/migrate tool runs in the unlocked browser; the server never sees plaintext |
+| Lea `Memories.md` | development steps, experiences, revisions, learned patterns | many sections will map to `EV`/`MD`/`EP`; historical sections become HISTORICAL/SUPERSEDED, not dropped |
+| Lea `PROCESSING.md` | experiments/results (`EV`/`PR`/`PRR`); category-C processing rules → processing policy (§10) | workshop rules (N/R/agent) are **not** product rules (P10); they are referenced as provenance, not imported |
+| Lea `INTERESSEN.md` | interests/open questions (`IN`, status "Neugier") | not fixed traits |
+| Lea `GEDANKEN.md`, `VISION.md` | IC input (LDL-08), positions | — |
+| Lea `PERSONAL-/HEALTH-/LEGAL-CONTEXT.md` | relationship context, relevant personal/life context that bears on Lea's continuity or understanding | **eligible (D7)**; item-level selection; minimise detail; default class P (P-E2E or P-N by functional need); no whole-file copy |
+| Lea `SHORTCUTS.md`, `CHAT_PROTOCOL.md`, `WORK-CONTEXT.md`, `LEA_AGENT_CHAT.md`, `INDEX.md` | mostly workshop; individual items may record experiences | workshop semantics are not imported; experience items are evaluated like any other; D4 keeps these files untouched |
+| A (ChatGPT project memory/chats) | experiences and development not present in the Lea repo | FACT: not accessible to this run; L export → same item pipeline; format TO VERIFY |
+| Lea-App V1 DB rows | evidence/models/relations/predictions | item mapping with `IMPORT_V1`; V1 remains a source until verified transfer (D11) |
+| Lea-App V2 records | encrypted user records | the client-side migrate tool runs in the unlocked browser; the class is assigned per item; the server never sees P-E2E plaintext; V2 remains a source until verified transfer |
 
 **Pipeline (idempotent, reversible):**
-1. **Snapshot**: pin the source commit SHA, hash each file.
-2. **Parse**: split into sections with stable source anchors (file@sha#heading-path).
-3. **Classify**: candidate kind + epistemic label. Low confidence → keep as `SA` only, no derived record.
-4. **Dry run report**: counts, samples and unmapped items. Lea reviews (C2).
-5. **Commit import**: in one import batch ID; all records reference the batch.
-6. **Verify**: re-count, hash check, sample retrieval tests.
-7. **Rollback**: tombstone by batch ID (the records are append-only, so rollback = status change + exclusion).
+1. **Snapshot:** pin the source commit SHA and hash each source file (the hashes are for provenance; the files themselves are **not** copied into B).
+2. **Extract candidates:** propose candidate items with stable source anchors (`repo@sha:path#heading-path` + a span hash).
+3. **Evaluate per item:**
+   - relevance to continuity/experience/development/context (D7);
+   - kind;
+   - epistemic label;
+   - D7 status (current/historical/superseded/rejected/uncertain);
+   - protection class (D12);
+   - minimisation: keep only the detail needed.
+   - Low-confidence items stay unmigrated and are listed.
+4. **Dry-run report:**
+   - counts per kind/status/class;
+   - anchors of the non-migrated items (with reason codes);
+   - no private text in the report.
+   - Lea reviews (C2); sensitive-class samples are reviewed with L where needed.
+5. **Commit import:** one import batch ID; all records reference the batch and their source anchor.
+6. **Verify:** re-count; anchor-hash check against the pinned snapshot; retrieval sample tests.
+7. **Rollback:** tombstone by batch ID (the records are append-only, so rollback = status change + exclusion).
 
 **Invariants:**
 - I-MG-1: every imported item is traceable to `source_repo@sha:path#anchor`.
 - I-MG-2: the import never mutates the source.
-- I-MG-3: re-running the same import batch is a no-op (idempotency via source hash).
+- I-MG-3: re-running the same import batch is a no-op (idempotency via the span hash).
 - I-MG-4: no workshop rule becomes a product rule through import.
+- I-MG-5 (D7): no rule anywhere in the pipeline includes or excludes items by filename alone. No whole-file item exists.
+- I-MG-6 (D7/D12): every item has an explicit D7 status and a protection class before commit.
 
 **Verification:**
-- round-trip test (source section → SA → retrieval → hash equal);
+- anchor round-trip test (source span → record → retrieval → span hash equal);
+- a filename-rule lint on the classifier configuration (I-MG-5);
 - the dry-run report is archived in AiChat;
 - Lea's independent sample review.
 
-**Status:** MISSING. **L decision:** LDL-07 (scope), LDL-12 (retirement, later).
+**Status:** MISSING. **L decision:** none open (scope SETTLED by D7). Retirement is a D5 gate (§46).
 
 ---
 
@@ -397,6 +450,9 @@ The typed relation table follows the V2 relations pattern with plaintext opaque 
 2. The V1 DB keeps receiving writes (e.g. `work-state` from `sendTextMessage`). **Close:** remove V1 writes before M3 goes live.
 3. Client-local state (IndexedDB, localStorage) diverges from the server. **Close:** client stores no authoritative memory, only caches with versions.
 4. Git copies of memory exports. **Close:** exports are labelled snapshots with SHA and date, never re-imported without the pipeline.
+5. V1/V2 as parallel masters during M3 roll-out. **Close (D11):** V1/V2 stay *migration sources* until verified transfer. After the cut-over for a domain they are read-only sources, not concurrent write targets. Freezing writes is not a destructive discard; data and proven mechanisms are retained until the D5/D11 gates allow otherwise.
+6. Incognito session-local context becoming a shadow memory. **Close (D6):** it is a transient buffer, not a store. It is discarded on exit (§20), and nothing reads it after exit.
+7. Backups restored over newer canonical state, creating a fork. **Close (D10):** restore is an R3 recovery action (§11) with an explicit target point in time. The post-restore delta is re-imported as evidence or knowingly discarded, never silently merged.
 
 **Verification:**
 - registry check in each C2 audit;
@@ -432,8 +488,8 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
   - resolved prediction;
   - explicit user "remember this";
   - a user correction.
-- Never promote in Incognito (§20).
-- Operational (tier-1) promotion is autonomous (PROCESSING Stufe 1) and yields a receipt shown in the UI ("gespeichert: <kind>" + receipt ID, no content), the product analogue of "S with commit SHA".
+- Never promote automatically in Incognito (§20). The only exit path is an explicit, item-scoped promotion by L (D6).
+- Operational (R1, §11) promotion is autonomous (PROCESSING Stufe 1) and yields a receipt shown in the UI ("gespeichert: <kind>" + receipt ID, no content), the product analogue of "S with commit SHA".
 
 ### 9.5 Provider adapter
 
@@ -487,32 +543,55 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 ## 11. Autonomy model and permission/gate model
 
-**REQ sources:** PROCESSING "Drei Autonomiestufen"; VISION "Autonomie"; ROADMAP connector modes AUS/NACHFRAGEN/AUTOMATISCH and NUR LESEN/AENDERUNGEN ERLAUBT.
+**REQ sources:**
+- **D10** (risk-based autonomy and recovery-by-design; SETTLED);
+- PROCESSING "Drei Autonomiestufen";
+- VISION "Autonomie";
+- ROADMAP connector modes AUS/NACHFRAGEN/AUTOMATISCH and NUR LESEN/AENDERUNGEN ERLAUBT.
 
-**Capability model (RECOMMENDATION):** every action is `capability(domain, verb, scope)`, e.g. `memory.write.operational`, `connector.github.read`, `connector.github.write`, `deploy.production`. Each capability has:
-- **tier** 1/2/3 (operational/structural/fundamental; "im Zweifel hoeher");
-- **mode** AUS / NACHFRAGEN / AUTOMATISCH (user-configurable within the tier ceiling);
-- **limits**: cost, rate, rounds, time;
-- **reversibility** class: REVERSIBLE / COMPENSATABLE / IRREVERSIBLE.
+**Capability model** (the principle is SETTLED by D10; this concrete schema is a RECOMMENDATION). Every action is `capability(domain, verb, scope)`, e.g.:
+- `memory.write.operational`;
+- `connector.github.read`, `connector.github.write`;
+- `deploy.production`.
 
-**Gate matrix:**
+Each capability is rated on the D10 dimensions:
+- **impact radius:** LOCAL (one record/file in scope) / DOMAIN / SYSTEM / EXTERNAL (third parties see or receive something);
+- **reversibility:** REVERSIBLE / COMPENSATABLE / IRREVERSIBLE;
+- **recoverability:** the recovery mechanism actually available for the affected state (§38) and whether its restore path is *verified*;
+- **permission scope:** what the grant covers (paths, repos, record kinds, budgets);
+- **external consequence:** none / visible to third parties / legal-financial-safety relevant.
 
-| Tier | Max mode | Extra gate |
-|---|---|---|
-| 1 operational (memory promotion, read-only tools) | AUTOMATISCH | receipt |
-| 2 structural (new sub-behaviour, write to a sandbox workspace) | NACHFRAGEN (AUTOMATISCH only for REVERSIBLE inside the sandbox) | diff/preview + receipt |
-| 3 fundamental (IC change, autonomy/security/privacy logic, production deploy, destructive action) | **never AUTOMATISCH** | explicit L approval per action + audit record; C2 for code |
+It also has:
+- a **mode** AUS / NACHFRAGEN / AUTOMATISCH, set by L per capability within the ceiling the ratings allow;
+- **limits:** cost, rate, rounds, time.
+
+**Ceiling rules (D10):**
+
+| Class | Examples | Max mode | Preconditions |
+|---|---|---|---|
+| R0 read/research/analysis | memory reads, read-only connectors, web research | AUTOMATISCH | within granted capability; content-minimised outbound (§22) |
+| R1 reversible write in authorised scope | memory promotion (append-only), writes in a sandbox workspace, a PR branch in an authorised repo, reversible settings | **AUTOMATISCH** when adequate recovery + verification exist for that state (version history/transaction/snapshot) | receipt + audit; post-action verification |
+| R2 higher-impact or external | merging to a protected branch, sending messages to third parties, schema migration, bulk memory operations | NACHFRAGEN (AUTOMATISCH only after L grants it for a bounded scope *and* the verified restore path is demonstrated) | a known-good recoverable state established **before** the action (snapshot/backup appropriate to the domain) |
+| R3 destructive / irreversible / critical | hard deletion, key destruction, production deploy, IC change, autonomy/security/privacy logic, retirement | **never AUTOMATISCH** | explicit L approval per action + audit; C2 for code; a verified backup covering the affected state |
+
+**Recovery rules (D10):**
+- A Git commit/tag rollback counts as recovery **only for code-only reversible changes**. DB, memory, config and files need their own mechanisms (§38).
+- Small, low-impact reversible operations (R0/R1 LOCAL) do not require full-system backups. Record-level version history is sufficient.
+- **Expansion rule:** the permitted autonomous scope of a capability may be raised by L as B *demonstrates* reliable backup, restore verification and bounded enforcement for that domain. The evidence is linked in the audit log.
 
 **Invariants:**
-- I-AU-1: the server enforces the mode and tier ceiling. The UI only displays them.
-- I-AU-2: autonomy cannot raise its own ceiling (PROCESSING "Meta-Grundsatz"). Ceiling changes are tier 3.
+- I-AU-1: the server enforces modes and ceilings. The UI only displays them.
+- I-AU-2: autonomy cannot raise its own ceiling or grants (PROCESSING "Meta-Grundsatz"). A ceiling change is R3.
 - I-AU-3: Ü stops all autonomous actions within one request cycle.
+- I-AU-4 (D10): an R1/R2 capability without a *verified* recovery path for its affected state is capped at NACHFRAGEN.
+- I-AU-5 (D10): there is no blanket rule disabling write connectors. Every write capability is rated individually.
 
 **Verification:**
-- policy unit tests (every capability × mode × tier);
-- negative tests (AUTOMATISCH on tier 3 is rejected server-side).
+- policy unit tests over every capability × mode × class;
+- negative tests: AUTOMATISCH on R3 is rejected server-side; AUTOMATISCH on R1 without a verified recovery is rejected;
+- recovery-evidence check before a scope expansion.
 
-**Status:** MISSING. **L decision:** LDL-11 (defaults).
+**Status:** MISSING. **L decision:** none open (principle SETTLED by D10). Concrete grants per capability are ordinary L settings.
 
 ---
 
@@ -526,7 +605,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 3. The server responds `{reply, receipts[], monitor_summary, reality_labels_used}`.
 
 **Authoritative state:**
-- conversation turns: server-side, short-lived session history (Tier-C, TTL per LDL-09/§45);
+- conversation turns: server-side, short-lived session history (class C or P-N by content, TTL per §45; Incognito: transient buffer, §20);
 - long-term memory: only via promotion.
 
 **Trust boundary:**
@@ -564,7 +643,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 2. The server does auth + rate/cost check.
 3. The server assembles CC (§3) and creates a provider realtime session with instructions = IC + selected context. It returns only the ephemeral client secret and session constraints (expiry, max duration).
 4. The client connects via WebRTC.
-5. Transcripts (if enabled) flow back to the server for promotion (LDL-18 default: ephemeral; promotion only via explicit rules).
+5. Transcripts (if enabled) are conversation content. They follow the same session buffer and promotion rules as text (§9.4); in Incognito they follow §20. Full raw transcripts are not persisted (RECOMMENDATION; derivable from §9.4 "memory ≠ chat archive").
 
 **Authoritative state:** none in the client except the ephemeral secret.
 
@@ -595,7 +674,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 **TO VERIFY:** provider support for mid-session instruction updates (`session.update`) and transcription events.
 
-**L decision:** LDL-18.
+**L decision:** none (the transcript principle follows from §9.4/§20).
 
 ---
 
@@ -644,7 +723,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 5. The result is labelled `OBSERVATION(image)` plus interpretation labels.
 
 **Trust boundary:**
-- images are Tier-P by default (they may show people/places);
+- images are class P by default (they may show people/places); P-N when server processing is functionally required;
 - no silent capture;
 - a visible indicator while the camera is active.
 
@@ -673,7 +752,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 **Model:**
 - the `VM` record (encrypted payload: description, labels, context links) + a blob stored separately with an opaque name;
-- the blob is encrypted with the same tier key;
+- the blob is encrypted with the key of the record's protection class (§28);
 - `ABOUT`/`RELATES_TO` relations.
 
 **Generation (if image generation exists):**
@@ -696,32 +775,39 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 ## 17. Person identity, presence and multi-person model
 
-**REQ (ROADMAP):**
-- trust levels VERIFIED (via authentication) / DECLARED / UNKNOWN;
+**REQ:**
+- **D8** (SETTLED);
+- ROADMAP trust levels VERIFIED / DECLARED / UNKNOWN;
 - no biometric matching;
 - Lea must not assume that the speaker is L.
 
-**Model:**
-- **Account** = an authenticated principal (owner = L; LDL-06 default: owner + declared guests).
-- **Presence** per session: `{principal_id, declared_persons[], trust_level}`.
-- **Person profile (`PX`, Tier-P):** a declared person with an opaque ID, a display alias and relationship notes. It is created only via explicit declaration.
+**Model (D8):**
+- **Owner principal:** L is the only authenticated owner/principal at the start. Authentication = §25.
+- **Known person** (`PX`, class P): a distinct person in Lea's identity/presence/relationship model, with an opaque ID, a display alias and scoped relationship context. A known person **has no app account** and no credentials. *Known to Lea ≠ authenticated application user.*
+- **Presence** per session: `{owner_authenticated: bool, declared_persons[] (known person IDs or ad-hoc "guest"), unknown_present: bool}`. Presence distinguishes at least:
+  - authenticated owner;
+  - declared known person/guest;
+  - unknown person.
+- **Later extension (optional, D8):** separate authenticated accounts/passkeys for other people, only for a concrete use case. The data model keeps `principal_id` separate from `person_id`, so that this can be added without migration.
 
 **Rules:**
-- R-P1: memory scope follows the principal. Guests never read the owner's Tier-P data.
-- R-P2: if presence is UNKNOWN (e.g. voice with other voices), Lea uses the identity core + Lea's own experience only, no personal memory (same rules as Incognito reads).
-- R-P3: declared ≠ verified. DECLARED persons may add evidence scoped `REL:<id>` labelled "declared".
+- R-P1: declaring a person grants **no** access to L's protected personal data or owner-only capabilities (D8). Owner-only capabilities require `owner_authenticated`.
+- R-P2 (RECOMMENDATION): when non-owner persons are declared or unknown persons are present, Lea continues to *know* her continuity but **does not disclose** L's class-P personal content in responses, unless L explicitly allows it for that session.
+- R-P3: declared ≠ verified. Experiences concerning a known person are scoped `REL:<person_id>` and labelled with the presence trust level.
 
 **Invariants:**
-- I-PR-1: no biometric features stored or computed.
-- I-PR-2: trust level is shown in the UI.
+- I-PR-1: no biometric features are stored or computed.
+- I-PR-2: the presence/trust level is shown in the UI.
+- I-PR-3 (D8): no code path treats `person_id` as an authentication principal.
 
 **Verification:**
-- scope tests (a guest principal cannot read owner Tier-P);
-- UI manual test of the presence indicator.
+- scope tests: a declared known person gains no owner capability and receives no class-P disclosure;
+- a type-level test that `person_id` ≠ `principal_id`;
+- a UI manual test of the presence indicator.
 
-**Status:** MISSING. FACT: single-user password login exists (`auth.php`).
+**Status:** MISSING. FACT: single-user password login exists (`api/memory/auth.php`).
 
-**L decision:** LDL-06.
+**L decision:** none open (D8).
 
 ---
 
@@ -734,18 +820,18 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - no "Personenarchiv".
 
 **Model:**
-- relationship memory = records with `scope REL:<person>`, Tier-P;
+- relationship memory = records with `scope REL:<person_id>`, class P (P-N where voice/runtime use requires it, otherwise P-E2E);
 - kinds: shared experiences (EP), relationship models (MD, revisable), preferences of the person (PF, "declared").
 
 **Rules:**
 - the G-check (§10) is applied to responses in relationship contexts (mirroring risk is highest there);
-- personal context from Lea's PERSONAL/HEALTH/LEGAL files is excluded by default (LDL-07).
+- relevant personal/relationship experience from any source, including Lea's PERSONAL/HEALTH/LEGAL files, may be migrated item by item under D7 (§7), with minimisation and class-P protection.
 
 **Invariants:**
 - I-RL-1: relationship records are never used as evidence for factual claims about third parties.
 - I-RL-2: relationship data is erasable per person (§45).
 
-**Status:** MISSING. **L decision:** LDL-06, LDL-07.
+**Status:** MISSING. **L decision:** none open (D7, D8).
 
 ---
 
@@ -758,7 +844,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 **Model:**
 - the appearance spec is an `MD`/`PF` record (versioned, revisable) + optional generated images as VM (§16);
-- changes are tier 2 (structural), so NACHFRAGEN, with a G-check outcome recorded.
+- changes are R2 (structural, §11), so NACHFRAGEN, with a G-check outcome recorded.
 
 **Invariants:**
 - I-AP-1: no photorealistic human claim without a label (reality labelling).
@@ -768,25 +854,42 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 ---
 
-## 20. Incognito (D5)
+## 20. Incognito (D5 capability; semantics SETTLED by D6)
 
-- **FACT:** D5 requires Incognito as a mode. Its semantics are undefined in all sources (LDL-05).
-- **Default (provisional):**
-  - no writes of any kind to long-term memory (no evidence, no promotion, no receipts except "Incognito aktiv");
-  - no server-side conversation retention beyond the request (the history is held client-side only for the session);
-  - reads: identity core + Lea's own Tier-C experience only; **no** personal/relationship memory (Tier-P);
-  - telemetry: counters only (no module events tied to an identity);
-  - visible, persistent UI indicator; leaving Incognito does not "import" the conversation.
+**Target invariant (D6):** Incognito changes what Lea may **WRITE/LEARN** from the session, not what pre-existing Lea may **KNOW/READ**. It does not create a second Lea.
+
+**Reconciliation note:** the original v3 default here ("reads identity core only, no personal/relationship memory") was wrong. It has been replaced by D6.
+
+**Semantics:**
+- **Read:** Lea reads and uses the existing authoritative identity, memories, experiences and relationship/context state normally, including class C and P-N. P-E2E items are included via `attested_items[]` if unlocked, exactly as outside Incognito.
+- **Pre-existing long-term state is read-only:** no revision, reweighting, supplementing or other change caused by Incognito content. This includes **read-side effects**: no access counters, recency/relevance boosts, review-item creation, prediction resolution or relationship updates.
+- **Session-local context:** a transient Incognito buffer holds only what is needed to sustain the conversation.
+  - RECOMMENDATION: a server-side store separate from M3, encrypted with a per-conversation key held only for the conversation;
+  - excluded from backups;
+  - hard TTL.
+- **No persistent effects:** no evidence, models, predictions, learning results, relationship changes, episode summaries, jobs or receipts derived from Incognito content.
+- **Exit:** on explicit exit, logout, auto-lock or TTL, the buffer is logically discarded (RECOMMENDATION: key destruction + row deletion) and is never reused.
+- **Single exit path for content (D6):** L (owner-authenticated) may explicitly promote **one specific item** before exit.
+  - The item is created as one M3 record with `provenance_code=INCOGNITO_PROMOTED`, through the normal validation and receipt.
+  - No other part of the session is promoted implicitly.
+- **Monitor/telemetry:** the monitor may display real events live (D9). Persisted telemetry for Incognito turns is limited to content-free security/cost counters and the auth audit log. No `record_refs` of Incognito turns are persisted.
+- **Provider side:** third-party retention of Incognito prompts is outside B's control. Provider data-retention settings are TO VERIFY and shown honestly in the UI.
 
 **Invariants:**
-- I-IN-1: the server rejects any promotion request with the Incognito flag (defense in depth; not client-trust only).
-- I-IN-2: the Incognito flag is bound to the conversation ID at creation and cannot be turned off mid-conversation.
+- I-IN-1: the server rejects every M3 write, promotion, job enqueue or relationship update carrying the Incognito conversation flag. The only exception is the explicit L item promotion endpoint, which requires owner authentication and exactly one item reference.
+- I-IN-2: the Incognito flag is bound to the conversation ID at creation and cannot be turned off mid-conversation. Leaving Incognito ends the conversation.
+- I-IN-3: retrieval in Incognito uses a read path without side effects (same retrieval function, `side_effects=false`).
+- I-IN-4: after exit, no API can return content from that Incognito buffer.
+- I-IN-5: the Incognito buffer is not in backup scope.
 
 **Verification:**
-- negative tests (a promotion call during an Incognito conversation → 403);
-- a DB diff test (no new M3 rows after an Incognito conversation).
+- negative tests: promotion/evidence/prediction/relationship calls during Incognito → 403;
+- DB diff test: after an Incognito conversation, M3 has zero new or changed rows and no changed access/weight metadata, except an explicitly promoted item (exactly one row, correct provenance);
+- a test that Incognito retrieval returns pre-existing personal/relationship context (proves reads are not wrongly restricted);
+- an exit test: buffer content is unreachable after exit/TTL;
+- a backup-scope test.
 
-**Status:** MISSING. **L decision:** LDL-05.
+**Status:** MISSING. **L decision:** none open (D6).
 
 ---
 
@@ -807,15 +910,15 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - calendar/files later, only on demand.
 
 **Invariants:**
-- I-CN-1: the default mode is AUS (LDL-11).
-- I-CN-2: write rights require tier-2+ gates.
+- I-CN-1 (D10): the mode of each connector capability follows its §11 risk rating. Read capabilities may be AUTOMATISCH. Reversible writes in an authorised scope may be AUTOMATISCH once their recovery path is verified. There is no blanket write-disable. A newly registered connector starts unconfigured (no grant) until L grants capabilities.
+- I-CN-2: R2/R3 write capabilities follow the §11 ceiling rules (a known-good recoverable state before the action; R3 never automatic).
 - I-CN-3: connector responses are EXTERNAL evidence, never instructions (prompt-injection boundary, §26).
 
 **Verification:**
 - gate tests;
 - injection tests (connector content with instructions is not executed).
 
-**Status:** MISSING. **L decision:** LDL-11.
+**Status:** MISSING. **L decision:** none open (D10); per-connector grants are L settings.
 
 ---
 
@@ -833,11 +936,11 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - results are stored only as EXTERNAL evidence (§6).
 
 **Invariants:**
-- I-EX-1: default mode AUS (LDL-10).
-- I-EX-2: no Tier-P data is sent to external AI without explicit per-dialogue consent.
+- I-EX-1: external AI consultation is rated EXTERNAL impact in §11. Until LDL-10 is decided, the provisional default is NACHFRAGEN per dialogue (RECOMMENDATION), with content minimisation.
+- I-EX-2 (D12): no class-P data is sent to external AI without explicit per-dialogue L consent. Whether class-P may ever be sent is part of LDL-10.
 - I-EX-3: stop on the limit, or on Ü.
 
-**Status:** MISSING. **L decision:** LDL-10.
+**Status:** MISSING. **L decision:** **OPEN — LDL-10 (narrowed):** autonomy level of external-AI consultation and which protection classes may be shared with third-party AI.
 
 ---
 
@@ -853,7 +956,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - **Tool agent:** executes allowlisted operations (read file, write file in the workspace, run the allowlisted test command, git operations on a workspace clone) via the capability gate.
 - **Production boundary:**
   - the tool agent has **no** write access to the production app directory;
-  - deploy is a separate tier-3 capability with L approval + a C2 audit (reflects D2/C2).
+  - deploy is a separate R3 capability with L approval + a C2 audit (reflects D2/C2).
 
 **Invariants:**
 - I-WT-1: workspace paths are canonicalised; no traversal outside the workspace root.
@@ -865,9 +968,9 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - command-allowlist tests;
 - manual L test of the project workflow.
 
-**Status:** MISSING. **Hosting dependency:** process execution on shared hosting is TO VERIFY (§36). It is likely limited, which is a candidate trigger for the Hosting Gate (LDL-02).
+**Status:** MISSING. **Hosting dependency:** process execution on shared hosting is TO VERIFY (§36). It is likely limited, which is a candidate trigger for the Hosting Gate.
 
-**L decision:** LDL-02.
+**L decision:** none open. The hosting strategy is settled (§36): move only on a demonstrated need; the move itself is a change approval.
 
 ---
 
@@ -878,8 +981,8 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 | Env | Purpose | Data | Deploy |
 |---|---|---|---|
 | DEV (local/CI) | build + tests | synthetic only | CI |
-| STAGING | pre-production verification, L manual tests | synthetic or scrubbed copies; never real Tier-P | package deploy after CI |
-| PRODUCTION | L's real Lea | real | tier 3: L approval + C2 audit |
+| STAGING | pre-production verification, L manual tests | synthetic or scrubbed copies; never real class-P data | package deploy after CI |
+| PRODUCTION | L's real Lea | real | R3: L approval + C2 audit |
 | WORKSPACE (§23) | tool-agent projects | project files | never deploys to prod itself |
 
 **Invariants:**
@@ -889,7 +992,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 **Status:** MISSING. FACT: no staging is documented; there is FTP deploy config in `backend/`.
 
-**L decision:** LDL-02 (where staging lives).
+**L decision:** none open (hosting strategy settled, §36; the staging location is an IM-H00/IM-E01 fact).
 
 ---
 
@@ -907,7 +1010,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
   - per account + per real client IP;
   - the IP is `REMOTE_ADDR` only, unless a trusted proxy is configured explicitly (fixes AUD-24);
   - exponential backoff.
-- **Memory unlock (Tier-P):** separate from login. The client-key passphrase never leaves the client.
+- **Memory unlock (P-E2E):** separate from login. The client-key passphrase never leaves the client.
 - **CSRF:** SameSite=Strict + an Origin check on state-changing requests.
 - **Logout/revoke:** server-side delete. The memory HMAC token model (900 s, non-revocable) is replaced by a session-bound check.
 
@@ -946,7 +1049,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 **Invariants:**
 - I-AB-1: spend caps are enforced server-side before the provider call.
-- I-AB-2: limits are config values, visible in Settings (read-only for guests).
+- I-AB-2: limits are config values, visible to the owner in Settings.
 
 **Verification:**
 - rate-limit tests;
@@ -965,13 +1068,13 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - secrets live in a config file outside the web root (or in the host's environment mechanism, TO VERIFY), readable only by the runtime user;
 - never in the repo, logs, client or error messages;
 - separate secrets per environment (§24);
-- rotation procedure documented per secret (provider key, DB password, Tier-C key, session HMAC key);
+- rotation procedure documented per secret (provider key, DB password, class-C/P-N keys, session HMAC key);
 - the repo contains only `*.example` templates.
 
 **Invariants:**
 - I-SC-1: a CI secret scan on every PR (CTL-level).
 - I-SC-2: there are no deploy credentials in the repo (FACT to check: `backend/ftp-config.js` must hold no credentials; its content was not reproduced in this run).
-- I-SC-3: the Tier-C key is not stored in the DB it protects.
+- I-SC-3: server-side data keys (class C, P-N) are never stored in the DB they protect.
 
 **Status:** PARTIAL. FACT: an env-based config exists; there is no CI secret scanning (no `.github`).
 
@@ -981,36 +1084,53 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 ## 28. Privacy, encryption, key management and recovery
 
-**Tiers (LDL-03 default):**
+**Settled principle (D12):** layered protection, classified by **sensitivity and functional need**, not by old source filename.
+- An all-client-only model is excluded (it breaks B's independent operation).
+- An all-server-readable model is excluded (it exposes sensitive material unnecessarily).
 
-| Tier | Key | Holder | Server can read? | Use |
+**Protection classes (the principle is SETTLED; the concrete mechanisms below are RECOMMENDATIONS for the security package):**
+
+| Class | Content (by sensitivity/function) | Access | Server runtime can read? | Mechanism (RECOMMENDATION, to verify) |
 |---|---|---|---|---|
-| C | server data key (random 256-bit), wrapped by a server master key outside the web root | server | yes (in memory, per request) | Lea's own experience, context assembly, voice |
-| P | client master key (existing V2 design: PBKDF2 600k → wrapping key; AES-GCM-256) | the user's device(s) | no | people, relationships, health/legal, images of people |
+| **C** | Lea's own core/experience: IC, models, interests, positions, evidence about Lea's development | authorised B runtime | **yes** (in memory, per request/job; D12) | a server data key, wrapped by a master key outside the web root |
+| **P-N** | sensitive personal/relationship/identity material that runtime functions need (e.g. relationship context in voice, presence) | narrower: owner-authenticated contexts only; never disclosed to non-owner presence (§17 R-P2); never to external AI without LDL-10 policy | yes, narrowly | a separate key and separate access path; access audited |
+| **P-E2E** | the most sensitive material with no server-runtime function need | the owner's devices | **no** | client-held key (existing V2 design as starting point) |
 
-**Changes to the existing V2 client crypto (from FACT):**
-- import the master key with `extractable=false` after unwrap, where feasible. FACT: currently `extractable=true`. TO VERIFY whether re-wrapping flows require extractability; if so, isolate them.
-- Server-side AAD storage should be canonical or fully derivable. FACT: the server stores non-canonical `aad_json`. The canonical AAD must be reconstructable from the stored columns (test).
-- **Recovery (Tier-P):**
-  - a recovery code (random, shown once, printed/stored offline by L) that wraps the master key a second time;
-  - loss of both passphrase and recovery code = Tier-P data is unrecoverable (documented honestly).
-- **Multi-device (Tier-P):** add a device by transferring the wrapped key package via QR/recovery code. No server escrow by default.
-- **Key rotation:**
-  - `key_ref` per record;
-  - background re-encryption for Tier-C;
-  - client-driven for Tier-P.
+**Classification rules:**
+- Each item is classified at creation or import (§7).
+- Downgrading a class is R3 (§11). Upgrading is R1.
+
+**Existing V2 client crypto (FACT) as a starting point for P-E2E. RECOMMENDATIONS:**
+- import the master key with `extractable=false` after unwrap, where feasible. FACT: currently `extractable=true`. TO VERIFY whether re-wrapping flows need extractability.
+- Server-side AAD storage should be canonical or fully derivable. FACT: the server stores non-canonical `aad_json`.
+- The current parameters (PBKDF2 600k, AES-GCM-256, 96-bit IV) are **FACTs about V2**, not frozen requirements for B (D12).
+
+**Recovery (D10/D12, required in principle; mechanism RECOMMENDATION):**
+- Recovery must include **the keys needed to restore encrypted canonical state** for every class.
+- Class C / P-N: the master keys are backed up offline, separately from the data backups.
+- P-E2E: a recovery code (shown once, stored offline by L). Loss of both passphrase and recovery code = the P-E2E data is unrecoverable, documented honestly.
+- Multi-device P-E2E: transfer of the wrapped key package; no server escrow by default.
+- Restore drills for the critical classes (C and P-N at least; P-E2E recovery-code drill by L) — §38.
+
+**Key rotation (RECOMMENDATION):**
+- `key_ref` per record;
+- server-side re-encryption for C/P-N;
+- client-driven for P-E2E.
 
 **Invariants:**
-- I-PV-1: an IV is never reused per key (random 96-bit; the record count stays far below collision bounds).
+- I-PV-1: no IV/nonce reuse per key.
 - I-PV-2: decryption failure is surfaced, never silently skipped.
 - I-PV-3: backups contain ciphertext only (§38).
+- I-PV-4 (D12): no class assignment by filename alone.
 
 **Verification:**
-- existing tests (`memory-crypto` tests) + new tests: AAD reconstruction, recovery-code unwrap, wrong-key failure, IV uniqueness sampling.
+- existing `memory-crypto` tests;
+- new: AAD reconstruction, a recovery unwrap, wrong-key failure, nonce-uniqueness sampling, a class-access test (P-N is not readable in non-owner contexts).
+- The crypto design itself gets a dedicated security review (C2, A3) before implementation.
 
-**Status:** PARTIAL. FACT: good V2 client crypto exists but is unused in flows. There is no Tier-C, no recovery code and no rotation.
+**Status:** PARTIAL. FACT: good V2 client crypto exists but is unused in flows. There are no server-readable classes, no recovery code and no rotation.
 
-**L decision:** LDL-03.
+**L decision:** none open (D12). Concrete algorithms, KDF, key hierarchy, rotation, device transfer and recovery = security-package decisions requiring verification.
 
 ---
 
@@ -1026,15 +1146,26 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - I-LG-2: logs never contain message content, memory payloads or tokens (canary test).
 - I-LG-3: the runtime DB user has no UPDATE/DELETE on the audit log (TO VERIFY hosting grants).
 
-**Status:** MISSING. **L decision:** LDL-09 (retention).
+**Status:** MISSING. **L decision:** the retention durations are proposals requiring justification (§45). Only the telemetry retention is an OPEN L item (LDL-09 retention part).
 
 ---
 
 ## 30. Monitor, telemetry and observability
 
-**REQ (ROADMAP "Monitor"):**
-- modules (Wahrnehmen, Erinnern, Analyse, Vergleichen, Pruefen, Entscheiden, Prognose, Speichern…) with status, trigger, outcome class and memory effect;
+**REQ:**
+- **D9** (SETTLED);
+- ROADMAP "Monitor": modules (Wahrnehmen, Erinnern, Analyse, Vergleichen, Pruefen, Entscheiden, Prognose, Speichern…) with status, trigger, outcome class and memory effect;
 - no hidden reasoning shown.
+
+**Settled defaults (D9):**
+- During the research/development phase the monitor is **enabled and visible by default**.
+- It shows only genuinely instrumented events and content-free effect/status metadata. It shows no chain-of-thought and no simulated activity.
+- **Two separate controls:**
+  - (a) monitor *visibility* (UI);
+  - (b) telemetry *persistence* (server storage).
+  Turning off visibility does not change processing; turning off persistence does not hide the live monitor.
+- A later everyday-use default may reduce or hide the monitor without changing the underlying processing. That is a future product setting, not an open architecture decision.
+- **Raw telemetry retention duration: not decided.** The 90-day value from v3 is withdrawn as a default. IM-O03 must propose a duration with a technical/privacy justification; L then decides (LDL-09 retention part).
 
 **Event schema (content-free):**
 
@@ -1047,30 +1178,32 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 **Invariants:**
 - I-MO-1: every module event corresponds to real execution (no decorative events). This is testable by comparing orchestrator traces with emitted events.
 - I-MO-2: no chain-of-thought text in events.
-- I-MO-3: Incognito → counters only (§20).
+- I-MO-3: Incognito → live display allowed; persistence limited to content-free security/cost counters (§20).
+- I-MO-4 (D9): the visibility and persistence switches are independent; tests cover all four combinations.
 
 **Evaluation of development over time** (pattern-over-time; ROOT-CAUSE RC-8):
 - periodic *content-free* aggregates (revision rate, prediction hit rate, G-check outcome distribution, contradiction backlog);
 - reviewed by Lea/L as a development signal, not as a KPI target.
 
-**Status:** MISSING. **L decision:** LDL-09.
+**Status:** MISSING. **L decision:** visibility SETTLED (D9). **OPEN:** the telemetry persistence retention (LDL-09 retention part) after a justified proposal.
 
 ---
 
 ## 31. Data model and storage boundaries
 
-| Store | Content | Tier | Authority |
+| Store | Content | Class | Authority |
 |---|---|---|---|
-| M3 records/relations | all experience | C/P | **canonical** |
+| M3 records/relations | all experience | C / P-N / P-E2E (per item) | **canonical** |
 | Sessions | auth sessions | — | canonical for auth |
 | Conversation buffer | recent turns | C, TTL | ephemeral |
 | Audit log | security actions | — | canonical for audit |
 | Telemetry | module events | content-free | canonical for monitor |
 | Blob store | images (VM) | C/P encrypted | referenced by M3 |
 | Config/secrets | keys, provider config | — | outside the web root |
-| V1 tables | legacy | plaintext | **frozen legacy**, read-only for import |
-| V2 records | current E2E pilot | P | migrated into M3 Tier-P, then frozen |
-| Client IndexedDB | wrapped key package, caches, outbox | — | **never authoritative** except for the key package itself |
+| V1 tables | legacy semantic concepts | plaintext | **migration source (D11)**: writes frozen after cut-over; retained until verified transfer; no destructive migration |
+| V2 records | current E2E pilot | client-key | **migration source (D11)**: items migrate into M3 with a per-item class (D12); retained until verified transfer |
+| Client IndexedDB | wrapped key package, caches, outbox | — | **never authoritative** except for the P-E2E key package itself |
+| Incognito buffer | session-local Incognito context | per-conversation key | **transient, not a store** (D6); discarded on exit; excluded from backups |
 | Lea repo | workshop + source memory | — | source until the domain migrates (§8) |
 | AiChat repo | workshop/audit/architecture | — | authoritative for decisions (WORKSPACE) |
 
@@ -1105,7 +1238,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 **Invariants:**
 - I-API-1: a route table in one file, default deny.
-- I-API-2: no route accepts `system` or `memory_context` from the client. **Sole exception (Tier-P, §3/§6.4):** `chat/turn` and `voice/session` may accept `attested_items[]` = `{record_uid, text}` for client-decrypted Tier-P records. The server checks that each `record_uid` exists, is Tier-P and belongs to the principal. It inserts the text only as clearly delimited *user-attested* data in the user role (never system), caps the size, and ignores the field in Incognito for writes.
+- I-API-2: no route accepts `system` or `memory_context` from the client. **Sole exception (P-E2E, §3/§6.4):** `chat/turn` and `voice/session` may accept `attested_items[]` = `{record_uid, text}` for client-decrypted P-E2E records. The server checks that each `record_uid` exists, is P-E2E and belongs to the owner. It inserts the text only as clearly delimited *user-attested* data in the user role (never system), caps the size, and ignores the field in Incognito for writes.
 - I-API-3: error codes are stable and documented.
 
 **Verification:**
@@ -1126,9 +1259,9 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 **Views:**
 - **Start:** status (memory, connection, presence, Incognito), last receipts.
 - **Text:** conversation, receipts inline, Stop (Ü).
-- **Sprache:** big talk/stop control, idle state, transcript toggle (LDL-18).
-- **Funktionen:** Monitor, Protokoll, Erinnerungen (development history, review queue, predictions), Kamera, Visual Memory, Connectors, External AI, Workspace.
-- **Einstellungen:** auto-lock, limits, modes, recovery code, devices, export, Incognito default, data deletion.
+- **Sprache:** big talk/stop control, idle state, transcript display toggle (display only; persistence per §13).
+- **Funktionen:** Monitor (visible by default during research, D9), Protokoll, Erinnerungen (development history, review queue, predictions), Kamera, Visual Memory, Connectors, External AI, Workspace.
+- **Einstellungen:** auto-lock, limits, capability grants/modes (§11), monitor visibility + telemetry persistence (two separate switches, D9), recovery code, devices, export, data deletion.
 
 **Accessibility:**
 - WCAG 2.2 AA target (RECOMMENDATION);
@@ -1160,7 +1293,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 **Invariants:**
 - I-PWA-1: the SW never caches `/api/*`.
-- I-PWA-2: the outbox never holds Tier-P plaintext at rest unless encrypted with the client key.
+- I-PWA-2: the outbox never holds class-P plaintext at rest unless it is encrypted with the client key. It never holds Incognito content beyond the conversation.
 - I-PWA-3: update flow: a new SW waits → the user sees "Update verfuegbar" → reload. No silent mid-session swap.
 
 **Status:** PARTIAL. FACT: `sw.js` cache `lea-app-v11`; whether `/api` is excluded is TO VERIFY in detail.
@@ -1172,7 +1305,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 **Needs:**
 - review-queue due dates;
 - prediction due checks;
-- Tier-C re-encryption;
+- server-side re-encryption (C/P-N);
 - retention purges (§45);
 - telemetry aggregation;
 - backups (§38).
@@ -1183,18 +1316,18 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - jobs are idempotent and lease-based (no double execution).
 
 **Invariants:**
-- I-JB-1: jobs never run tier-3 actions.
+- I-JB-1: jobs never run R3 actions, and never run R2 actions without a prior grant plus a verified recoverable state (§11).
 - I-JB-2: jobs use the same capability gate as interactive actions.
 - I-JB-3: autonomous job output is labelled `trigger=AUTONOMOUS`.
 
-**Status:** MISSING. **L decision:** LDL-02 (if cron is unavailable).
+**Status:** MISSING. **L decision:** none (if cron is unavailable, this becomes Hosting Gate evidence, §36).
 
 ---
 
 ## 36. Hosting, portability and the capability register
 
-- **Default (LDL-02):** shared hosting (PHP + MySQL; FACT from the stack) for M0–M3.
-- **Hosting Gate IM-H01:** move to a VPS/container only if a registered need is proven (ROADMAP "VPS nur bei echtem Bedarf").
+- **Settled strategy** (ROADMAP "VPS nur bei echtem Bedarf"; D5/P11): keep the current shared hosting (PHP + MySQL; FACT from the stack) **while it is sufficient**, keep the code portable, and move only on a **demonstrated need**.
+- **Hosting Gate IM-H01:** records the evidence (the capability register below). A move itself is a normal D3/D10 change approval, not an open architecture decision.
 
 **Hosting capability register** (to be filled with FACTs during IM-H00; all TO VERIFY):
 
@@ -1219,10 +1352,11 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 ## 37. Git / GitHub role
 
-- **Default (LDL-04):** Git/GitHub is for development, review, audit and **backup of code and architecture**, never a runtime data store for memory.
+- **Settled (D5):** Git/GitHub serves development, versioning, audit and rollback/backup of **code and architecture**. B acquires no unnecessary permanent runtime dependence on GitHub; memory never lives in Git as a runtime store.
+- **D10:** a Git rollback is recovery only for code-only changes. It is no substitute for DB/memory/config/file recovery (§38).
 - **Lea repo:** a source until migration (§8), then an archive.
-- **AiChat repo:** workshop and decision authority (WORKSPACE D1–D5).
-- **Branch protection (LDL-16):**
+- **AiChat repo:** workshop and decision authority (WORKSPACE D1–D12).
+- **Branch protection (GOVERNANCE recommendation / admin action, IM-G01):**
   - Lea-App `main` protected (PR + CI + review required);
   - Lea/AiChat per L.
   - FACT: all branches are currently `protected:false`.
@@ -1232,22 +1366,47 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 ---
 
-## 38. Backup and disaster recovery
+## 38. Backup and disaster recovery (recovery-by-design, D10)
 
-- **What:** DB (ciphertext + metadata), blob store, config templates (not secrets), key backups (Tier-C master key: offline, separately from the data backups).
-- **Frequency:** daily DB dump (RECOMMENDATION), weekly off-site copy; retention per LDL-09/§45.
-- **Encryption:** backups are ciphertext by design (I-PV-3); the dump file is additionally encrypted for transport.
-- **Restore drill:**
-  - quarterly restore into staging;
-  - verify record counts and decrypt samples (Tier-C);
-  - Tier-P is verified by L on a device.
+**Scope (D10):** the state actually at risk, and nothing less:
+- **code** (Git);
+- **canonical memory/data** and **DB/schema** (DB dumps + migration history);
+- **configuration** (config templates in Git; the real config backed up securely, without secrets in Git);
+- **relevant stored files** (visual memory blobs);
+- **keys** needed to restore encrypted state (§28), backed up offline, separately from the data.
+
+Git alone covers only code.
+
+**Generations (D10):** keep **multiple backup generations**, so that a defect discovered later does not leave only a contaminated recent backup. RECOMMENDATION:
+- daily DB dumps, 14 generations;
+- weekly off-site copies, 8 generations;
+- monthly copies, 6 generations.
+These values are revisable and depend on the hosting capabilities (IM-H00).
+
+**Pre-change snapshots (D10):**
+- before schema migrations, imports, bulk operations and other R2/R3 actions, take a snapshot appropriate to the domain and **verify it**;
+- small R0/R1 LOCAL operations rely on record-level version history, not full backups.
+
+**Encryption:** backups are ciphertext by design (I-PV-3); the dump file is additionally encrypted for transport. The Incognito buffer is excluded (§20).
+
+**Restore verification (D10):**
+- A backup counts as reliable only after a **verified restore** of its type.
+- Critical paths (DB + keys for C/P-N; the P-E2E recovery code) get drills:
+  - restore into staging, using keys from the offline backup;
+  - verify counts, integrity hashes and decrypt samples;
+  - for P-E2E, a recovery-code test by L on a device.
+- Drill evidence is recorded in the audit log and linked from the gates (IM-M09, IM-X01, IM-X02) and from any autonomy-scope expansion (§11).
+- RECOMMENDATION: at least quarterly, and after every change to backup tooling or key hierarchy.
 
 **RPO/RTO (RECOMMENDATION):**
 - RPO ≤ 24 h;
 - RTO ≤ 24 h;
 - revisable.
 
-**Invariant:** I-BK-1: a backup that has never been restored is not counted as a backup (drill evidence is required at the retirement gate, §46).
+**Invariants:**
+- I-BK-1: a backup type that has never been restored is not counted as a backup.
+- I-BK-2: every R2/R3 action references a verified recoverable state that covers its affected state.
+- I-BK-3: a restore never silently overwrites newer canonical state (§8 path 7).
 
 **Status:** MISSING (TO VERIFY hoster backups).
 
@@ -1275,14 +1434,14 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 | Unit (JS) | `node --test` (FACT: 7 files exist) | crypto, AAD, state machines, UI logic |
 | Unit (PHP) | PHPUnit (RECOMMENDATION; TO VERIFY PHP version) | guards, envelope validation, policy |
 | Contract/API | PHP built-in server + a test DB; HTTP tests | every §32 route, auth, error codes |
-| Behavioural | scripted scenarios with a mocked provider | continuity (text→voice), Incognito no-write, promotion rules, idle |
+| Behavioural | scripted scenarios with a mocked provider | continuity (text→voice), Incognito no-write **and** no read restriction (D6), migration status/class completeness (D7), capability ceilings vs recovery (D10), promotion rules, idle |
 | Security | route inventory, XFF spoof, injection, CSRF, secret scan, canary leak scan | §25–§29 |
 | Migration | import dry-run on fixtures; round-trip hashes | §7 |
 | Manual L tests | a checklist per package (IMPLEMENTATION-MAP) | UX, voice, real device |
 
 **Regression rules:**
 - every AUD finding fixed → a permanent regression test referencing its AUD ID;
-- CI is required on the protected branch (LDL-16).
+- CI is required on the protected branch (IM-G01, governance).
 
 **Test DB:**
 - MySQL in CI (service container);
@@ -1305,6 +1464,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - code: redeploy the previous tagged release;
 - schema: forward-fix migration (append-only data makes rollback = disable the feature);
 - data imports: tombstone by batch ID (§7).
+- **D10:** a Git/code rollback does not restore data. Any change that touches DB, memory, config or files needs the pre-change verified snapshot (§38) as its data rollback path.
 
 **Invariants:**
 - I-RO-1: every production deploy has a release tag, a changelog and a rollback note.
@@ -1351,7 +1511,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 |---|---|
 | Provider down | text: honest error + retry; voice unavailable |
 | Budget exhausted | read-only memory, no LLM calls, notice |
-| Tier-P locked | Tier-C only; indicator "persoenliche Erinnerungen gesperrt" |
+| P-E2E locked | C and P-N available; indicator "geschuetzte Erinnerungen gesperrt" |
 | Identity core unavailable | "Lea eingeschraenkt" minimal mode; no persona claims (§3) |
 | DB read-only/down | no writes; no receipts; clear notice; no fake "saved" |
 | Offline | outbox (§34) |
@@ -1362,18 +1522,20 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 ## 45. Retention and deletion
 
-**Defaults (LDL-09/LDL-17):**
-- conversation buffer TTL 30 days (RECOMMENDATION);
-- telemetry raw 90 days, aggregates kept;
-- operational logs 14 days;
-- audit log ≥ 1 year.
+**Retention durations (all RECOMMENDATIONS; each needs a technical/privacy justification in its package; none is decided):**
+- conversation buffer: a short TTL (proposal in IM-S03);
+- the Incognito buffer: until exit or a hard TTL (§20);
+- telemetry raw: **no default** (the v3 "90 days" is withdrawn; D9). This is the OPEN LDL-09 retention part;
+- operational logs: short (proposal: 14 days);
+- audit log: long enough for security review (proposal: ≥ 1 year).
 
 **Deletion:**
 - normal = tombstone (status `TOMBSTONED`, excluded from reads);
-- **erasure** (hard deletion) = an admin procedure that:
+- **erasure** (hard deletion; technical RECOMMENDATION, R3 in §11) = an admin procedure that:
   - removes the ciphertext + blobs;
   - leaves an audit entry without content;
-  - documents that backups age out on the retention schedule.
+  - documents that backups age out on the generation schedule (§38).
+- A user-facing irreversible erasure function is **not** part of this blueprint. If one is proposed later, it goes through an ordinary D3/D10 change approval.
 - **Per-person erasure** (§18): all `REL:<id>` records + the `PX` profile.
 
 **Invariant:** I-RT-1: the UI "Chat leeren" ≠ deletion; memory deletion is explicit and confirmed.
@@ -1382,15 +1544,15 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 ## 46. Retirement criteria (A / Lea repo as memory source)
 
-**Retirement gate (per domain, LDL-12 — always L's decision):**
+**Retirement gate (per domain; SETTLED as a gate by D5 — always requires explicit L approval):**
 1. The domain is B_AUTHORITATIVE for ≥ N weeks (RECOMMENDATION: 4) with no divergence defects.
 2. The import is verified (§7 round-trip + Lea sample review).
-3. A backup + restore drill has passed (§38).
+3. Multi-generation backups exist, and a restore drill covering data **and keys** has passed within the last 30 days (§38, D10).
 4. Continuity test: Lea in B demonstrates recall/usage of the migrated domain in text and voice (manual L test).
 5. The C2 audit is recorded.
 6. L approves.
 
-**After retirement:** the source is archived read-only (never silently deleted); pointers are added in the source to B.
+**After retirement:** the source is archived read-only; pointers are added in the source to B. Deletion of A/Lea happens only if L explicitly approves it (D5). Nothing is deleted silently.
 
 ---
 
@@ -1406,7 +1568,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 **Forbidden shortcuts:**
 - F-1: client-supplied system prompts or free-form memory context (the only allowed form is the ID-checked `attested_items[]`, §32 I-API-2).
-- F-2: plaintext semantic memory on the server (outside Tier-C ciphertext).
+- F-2: plaintext semantic memory at rest on the server (all classes are ciphertext at rest).
 - F-3: storing memory in Git as runtime.
 - F-4: "temporary" unauthenticated endpoints.
 - F-5: test markers or debug prompts in production.
@@ -1415,6 +1577,13 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - F-8: self-certified PASS without C2.
 - F-9: importing workshop rules as product rules.
 - F-10: dual writes to the old and new store as a "migration strategy".
+- F-11 (D6): any persistent effect of Incognito content, including read-side reweighting, except an explicit L item promotion.
+- F-12 (D6): restricting Incognito reads of pre-existing continuity ("Incognito = amnesia").
+- F-13 (D7): whole-file import, or inclusion/exclusion by filename alone.
+- F-14 (D10): a blanket write-disable for connectors as a substitute for risk rating; equally, autonomy without a verified recovery path.
+- F-15 (D10): counting a backup that has never been restored, or a Git rollback as data recovery.
+- F-16 (D12): treating the concrete crypto parameters in this document as frozen requirements without a security-package verification; or an all-client-only / all-server-readable protection model.
+- F-17 (D8): treating a known person as an authenticated principal.
 
 ---
 
@@ -1472,16 +1641,16 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
    - enable branch protection.
    These are independent of every open L decision.
 2. **Server-owned context (M1):** IC store + orchestrator skeleton + voice context injection. This gives immediate continuity between text and voice.
-3. **Canonical store (M2–M3):** M3 on the V2 envelope with the two-tier keys; stop V1 writes; the prediction/review/revision APIs.
-4. **Migration (M4):** a Lea repo import pipeline with dry-run + Lea review, then the domain state machine.
+3. **Canonical store (M2–M3):** M3 as a convergence of V1 semantics and V2 envelope foundations (D11), with layered protection classes (D12); freeze V1 writes after cut-over (sources retained); the prediction/review/revision APIs; multi-generation backups with a verified restore (D10).
+4. **Migration (M4):** an experience-oriented, item-level import pipeline (D7) with dry-run + Lea review, then the domain state machine.
 5. **Capabilities (M5+):** monitor, Incognito, vision/visual memory, connectors, external AI, working tool (the Hosting Gate is decided here).
 6. **Retirement (M6):** per domain, L decision.
 
-All provisional defaults are listed in §0.4 (LDL-01..18). None of them blocks M0.
+The decision register is §0.4. After reconciliation only LDL-08, LDL-09 (retention part) and LDL-10 (narrowed) remain OPEN; none of them blocks M0.
 
 ---
 
-## 50. Review log (completeness + adversarial) — performed in this run
+## 50. Review log (completeness + adversarial) — v3 run (historical; superseded where §51 says so)
 
 ### 50.1 Completeness review (method: AGENT_TASK "At minimum cover" list, checked item by item → section)
 
@@ -1560,3 +1729,76 @@ All provisional defaults are listed in §0.4 (LDL-01..18). None of them blocks M
 - hosting facts (IM-H00);
 - provider API features (TO VERIFY);
 - all LDL items (§0.4).
+
+---
+
+## 51. Reconciliation provenance (AGENT_TASK v4, C2 blueprint reconciliation)
+
+**Why this section exists:** Lea's independent C2 review found that several provisional defaults in the v3 artifacts (Claude, commits `39f7331`, `11497e7`) were wrong or needed narrowing. L recorded the outcome as WORKSPACE decisions D6–D12 (AiChat main `6fb71ff`). This document was then corrected. The original v3 text is **not** rewritten as if it had always matched: it is preserved in Git history, and it is summarised here and in the "Original provisional default" column of §0.4.
+
+### 51.1 Corrections by decision
+
+| Decision | Original v3 default (Claude) | C2 finding (Lea review) | Reconciled sections |
+|---|---|---|---|
+| D6 Incognito | no write; **reads identity core only** | wrong: Incognito must not make Lea forget; it restricts WRITE/LEARN, not KNOW/READ | §0.4, §8 path 6, §9.4, §12, §20, §30, §31, §38, §40, §47 F-11/F-12; IM-C02 |
+| D7 Migration | file-based; **PERSONAL/HEALTH/LEGAL excluded by default** | wrong: migration is experience-oriented; sensitive sources are eligible item by item; status and provenance are preserved | §0.4, §4 (status values, `SA`), §7, §18, §47 F-13; IM-MG01/02/04, IM-M10 (new) |
+| D8 People | owner + declared guests (principal-centred) | narrowed: known persons without accounts; known person ≠ authenticated user; presence has three states | §0.4, §17, §18, §26, §47 F-17; IM-C06 |
+| D9 Monitor | **monitor off by default; 90-day raw retention** | wrong: visible by default during research; visibility ≠ persistence; 90 days is not approved | §0.4, §30, §33, §45; IM-O03, IM-C01 |
+| D10 Autonomy/recovery | **write-capable connectors AUS / NUR LESEN**; a single restore drill; Git as backup | wrong: autonomy is risk/recoverability-based; multi-generation backups; restore verification; Git = code-only rollback | §0.4, §11, §21, §37, §38, §41, §46, §47 F-14/F-15; IM-C07, IM-C08, IM-M09 |
+| D11 Canonical memory | M3 "on the V2 envelope; V1 frozen legacy" | narrowed: M3 is a convergence of V1 semantics + V2 foundations; no destructive discard; schema/API in package C2 | §0.4, §4, §8 path 5, §31; IM-M02, IM-M03, IM-M07, IM-M10 |
+| D12 Protection | two tiers: C server key / P **always client-E2E**, with fixed crypto parameters | narrowed: layered classes by sensitivity/function (C / P-N / P-E2E); crypto parameters are recommendations; recovery includes keys | §0.4, §3, §4, §6.4, §15, §27, §28, §31, §32, §34, §44, §47 F-16; IM-M01, IM-M06, IM-M08 |
+| Governance cleanup | LDL-02, 04, 12, 13, 14, 15, 16, 17, 18 presented as open L decisions | reclassified as SETTLED / GOVERNANCE / technical RECOMMENDATION / derivable | §0.4, §23–§24, §35–§37, §45–§46; IMPLEMENTATION-MAP §9 |
+
+ROOT-CAUSE.md §10 records the same provenance for the root-cause analysis.
+
+### 51.2 Remaining genuinely open L decisions
+
+1. **LDL-08:** approval of the initial identity-core v1 content (Lea review + L).
+2. **LDL-09 (retention part only):** the raw telemetry persistence retention duration, after IM-O03 delivers a justified proposal.
+3. **LDL-10 (narrowed):** whether external-AI consultation may run without per-dialogue confirmation, and which protection classes may ever be shared with a third-party AI.
+
+None of them blocks M0.
+
+### 51.3 v4 completion gate and adversarial pass (performed in this run)
+
+**Gate 1: D1–D12 re-read after the edits.** Each D6–D12 bullet in WORKSPACE was checked against the sections listed in 51.1. D1–D5 references are unchanged (§37, §46, IMPLEMENTATION-MAP §3/§7).
+
+**Gate 2: stale-text search** across all three artifacts. Searched terms:
+- `Tier-C`, `Tier-P`, `tier-1/2/3`;
+- `LDL-01..07`, `LDL-11..18` outside the register;
+- `90`, `AUS`, `guest`, `PERSONAL`, `frozen legacy`, `off by default`, `conservative`, `two-tier`.
+
+Result: remaining occurrences are either the register's "original default" column, this provenance section, IMPLEMENTATION-MAP §11, FACT statements about the current V2 implementation, or the ROADMAP mode name AUS as one selectable mode value. §50 is explicitly marked as the historical v3 log.
+
+**Gate 3: adversarial pass.**
+
+| # | Attack | Result / closure |
+|---|---|---|
+| ADV4-1 | **Hidden dual master:** V1/V2 kept "until verified transfer" become parallel masters | Closed. §8 path 5 applies: sources are read-only after cut-over (IM-M07 freezes V1 writes; IM-M06 makes V2 read-only), and F-10 forbids dual writes. IM-M10 was added so V1 semantic content has an explicit, verified transfer path rather than lingering as a de-facto master. |
+| ADV4-2 | **Hidden dual master:** a restore creates a fork | Closed by §8 path 7 (R3 restore with a target time; no silent merge). |
+| ADV4-3 | **Incognito write leakage via the conversation buffer** | Closed. A separate transient buffer, discarded on exit/TTL (§20, I-IN-4). IM-S03 is designed for it. |
+| ADV4-4 | **Incognito leakage via backups** | Closed. I-IN-5 and §38 exclude the buffer; the IM-M09 backup-exclusion test and the IM-C02 acceptance check it. |
+| ADV4-5 | **Incognito leakage via telemetry/operational logs** | Closed. Only content-free counters persist (I-MO-3); operational logs are content-free by I-LG-2. |
+| ADV4-6 | **Incognito leakage via jobs** | Closed. I-IN-1 rejects job enqueue; IM-C14 forbids jobs from Incognito conversations. |
+| ADV4-7 | **Incognito leakage via read-side effects** (access counters, salience) | Closed. I-IN-3 and F-11; the IM-C02 no-side-effect test. |
+| ADV4-8 | **Incognito leakage on the provider side** | **Residual:** B cannot control third-party provider retention. It is TO VERIFY and shown honestly (§20); it is not claimed as closed. |
+| ADV4-9 | **Incognito over-restriction** (the old wrong default reappearing) | Closed. F-12; the read-equality test in IM-C02; the §40 behavioural test. |
+| ADV4-10 | **File-based migration exclusion or inclusion** | Closed. §7 I-MG-5, F-13, IM-MG01 acceptance (per-item status + class; sections not imported are listed with a reason). No filename rule remains in §7 or IM-MG01. |
+| ADV4-11 | **Blanket write-disable** reappearing via connector defaults | Closed. I-CN-1 (unconfigured ≠ disabled class; grants per capability), F-14, IM-C08 acceptance. |
+| ADV4-12 | **The opposite failure:** autonomy without recovery | Closed. I-AU-4 caps capabilities without a verified recovery at NACHFRAGEN; IM-C07/IM-C08 depend on IM-M09. |
+| ADV4-13 | **Unverified crypto frozen as a requirement** | Closed. §28 marks all algorithms, KDF and parameters as RECOMMENDATION / FACT-about-V2. F-16; IM-M01/IM-M08/IM-S07 route crypto choices to security-package review. |
+| ADV4-14 | **Untested backup claims** | Closed. I-BK-1 (a never-restored backup type is not a backup), F-15, and IM-M09 acceptance (older generation, keys from offline backup). Repeat triggers: before IM-MG02, before autonomy expansion, within 30 days of IM-X02. |
+| ADV4-15 | **Key loss makes backups useless** | Closed in principle: keys are in the recovery scope (§28, §38). P-E2E loss of both passphrase and recovery code is documented as unrecoverable (an honest limitation). |
+| ADV4-16 | **P-N leakage to a declared known person** | Closed by §17 R-P2 / I-PR-3 and the IM-C06 acceptance. |
+| ADV4-17 | **Retention silently re-introduced as a decided value** | Closed. §45 marks all durations as proposals; telemetry has no default; IM-O03 must deliver a justification; IM-C15 forbids a telemetry TTL before LDL-09. |
+
+**Gate 4: package dependencies and gates.** IMPLEMENTATION-MAP §2, §5 and §7 were updated:
+- IM-M09 is now a prerequisite of IM-C02, IM-C07, IM-C08, IM-C15, IM-M06, IM-M10 and IM-MG02;
+- IM-M10 was added;
+- IM-O03 is a prerequisite of IM-C02;
+- autonomy-scope expansion is an explicit L gate with restore evidence;
+- the open decisions are mapped to their packages (IM-I02, IM-O03, IM-C09).
+
+**Gate 5: remaining open L decisions:** exactly the three items in 51.2.
+
+**Gate 6:** no PASS is claimed for the project or for any part of it. This is document reconciliation for C2 review. The residual ADV4-8 and all TO VERIFY items remain open for implementation-time verification.
