@@ -33,6 +33,17 @@ Claude/Copilot is a supporting independent auditor/architect/idea source. Its re
 
 Lea-App remains FROZEN. This task authorizes NO mutation of Lea-App.
 
+## Autonomous no-interruption rule
+This architecture run should complete without routine questions to L.
+
+- Treat all decisions already recorded in WORKSPACE.md and all clearly established product vision/requirements in the mandatory sources as settled input. Do not ask L to reconfirm them.
+- When multiple technical designs could satisfy the settled vision, analyze the alternatives and choose/recommend the strongest default using security, continuity, autonomy, simplicity, reversibility, testability, portability and long-term maintainability as criteria.
+- If a genuinely unresolved product/architecture choice remains, do not stop the run merely to ask L. Record it explicitly as `L-DECISION-LATER`, state the recommended default and alternatives/trade-offs, make any assumptions necessary to continue clearly provisional, and continue every other part of the blueprint that does not depend irreversibly on that choice.
+- Do not convert an unresolved choice into a binding L decision.
+- Stop early only for a genuine hard blocker that makes the requested analysis impossible or would require violating the read-only/mutation/security boundaries.
+- Lack of implementation authorization is not a blocker: this run designs only.
+- Aim to deliver the most complete internally coherent blueprint possible in this single run so that L is not required to interact during execution.
+
 ## Purpose of this run
 Produce a one-time, extremely detailed technical foundation that allows later ZERO-MEMORY agents to implement B incrementally without having to reinvent the architecture or infer L's vision.
 
