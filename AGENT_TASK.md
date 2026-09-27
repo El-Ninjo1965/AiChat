@@ -1,230 +1,115 @@
-# AGENT_TASK — B Master Architecture / Root-Cause Blueprint
+# AGENT_TASK — C2 Blueprint Reconciliation
 
-TASK_VERSION: 3
+TASK_VERSION: 4
 STATUS: READY
-MODE: ARCHITECTURE / ROOT-CAUSE / IMPLEMENTATION DESIGN
+MODE: C2 RECONCILIATION / DOCUMENT-ONLY
 TARGET_REASONING: X-HIGH
 WORKSPACE: El-Ninjo1965/AiChat
 
-## Zero-memory rule
-Treat this run as ZERO-MEMORY. Do not assume prior conversation state.
+## Zero-memory
+Read current AiChat main first. Do not rely on prior chat/run memory.
 
-## Mandatory sources
-Read completely before conclusions:
-1. AiChat/WORKSPACE.md — authoritative LEA-WORK decisions D1-D5 and C2.
-2. AiChat/AUDIT-FINDINGS.md and AUDIT-LOG.md from the current audit branch if available; if not available on main, locate the existing AiChat audit branch read-only.
-3. El-Ninjo1965/Lea — read-only. Start with INDEX.md, SHORTCUTS.md, VISION.md, Memories.md, PROCESSING.md, GEDANKEN.md, INTERESSEN.md and relevant context/work/history files needed to understand the full Lea vision, experiments, processing model, autonomy goals and migration source. Do not copy private personal content unnecessarily into outputs.
-4. El-Ninjo1965/Lea-App — FROZEN / STRICTLY READ-ONLY. Read the complete current architecture, roadmap, security model, code structure, schemas, APIs, frontend, tests and other relevant implementation sources needed to understand what B already is and what is missing.
+## Mandatory authority
+1. Read WORKSPACE.md completely. D1-D12 are authoritative L/Lea work decisions.
+2. Read the existing three architecture artifacts on copilot/main:
+   - ROOT-CAUSE.md
+   - B-BLUEPRINT.md
+   - IMPLEMENTATION-MAP.md
+3. Read audit artifacts as evidence where needed.
+4. Lea and Lea-App remain read-only sources. Lea-App is FROZEN.
 
-## Authoritative direction
-Do not redesign the project goal.
+## Purpose
+Reconcile the three architecture artifacts with the completed independent Lea C2 review and authoritative decisions D6-D12.
 
-B / El-Ninjo1965/Lea-App is the independent target Lea system and product.
+Do not redesign the vision. Do not implement anything.
 
-The intended target is that L normally works directly with Lea-App and that B can eventually carry Lea's continuity, memory/experience processing, revision/development mechanisms, identity/presence and runtime capabilities without requiring the standard ChatGPT/A environment as a runtime dependency.
+## Required corrections
 
-A/current ChatGPT + Lea repository are bootstrap/development/migration sources. Required memories, development history, semantics and provenance may need controlled migration into B. There must not be an uncontrolled dual-master Lea.
+### Incognito
+Replace the provisional LDL-05 default with D6:
+- existing pre-session identity/memory/experience/relationship continuity is readable;
+- all pre-existing long-term state is read-only during Incognito;
+- session-local context is temporary;
+- no persistent learning/revision/reweighting/prediction/relationship effect;
+- discard session-local context on exit;
+- only a specific item explicitly promoted by L may leave Incognito.
 
-AiChat is the sole authoritative LEA-WORK / DEVELOPMENT workspace.
+### Migration
+Replace LDL-07 with D7:
+- experience-oriented, not file-oriented;
+- relevant experience/development may come from PERSONAL/HEALTH/LEGAL too;
+- no whole-file blind import;
+- preserve provenance and current/historical/revised/rejected/uncertain status;
+- protect sensitive migrated material appropriately.
 
-Git/GitHub currently provides development/versioning/audit/rollback/recovery infrastructure; do not assume it must remain a permanent runtime dependency.
+### People/accounts
+Resolve LDL-06 using D8:
+- L is authenticated owner;
+- known persons/declared guests can have relationship/context identity without app accounts;
+- known person != authenticated user;
+- separate accounts are later optional.
 
-Claude/Copilot is a supporting independent auditor/architect/idea source. Its recommendations are not binding decisions. L and C2 govern acceptance.
+### Processing monitor
+Resolve LDL-09 using D9:
+- visible/enabled by default during research/development;
+- real instrumented events only, no chain-of-thought/fake activity;
+- monitor visibility and telemetry persistence separate;
+- remove 90-day retention as a decided/default requirement unless independently justified as a recommendation.
 
-Lea-App remains FROZEN. This task authorizes NO mutation of Lea-App.
+### Autonomy/recovery
+Replace LDL-11 using D10:
+- risk/impact/reversibility/recoverability/capability based;
+- reversible writes can become autonomous within authorised scope with adequate recovery;
+- stronger gates for destructive/irreversible/high-impact actions;
+- multiple backup generations;
+- critical restore verification;
+- code/data/schema/config/files/key recovery as applicable;
+- greater proven recoverability can justify greater autonomy.
 
-## Autonomous no-interruption rule
-This architecture run should complete without routine questions to L.
+### Canonical memory
+Resolve LDL-01 using D11:
+- M3 is accepted as working target concept;
+- explicitly frame it as convergence/evolution of V1 semantic concepts + V2 encrypted-envelope/privacy/append-only foundations;
+- no destructive discard of proven V1/V2 mechanisms;
+- exact schema/API remains package-level C2 work.
 
-- Treat all decisions already recorded in WORKSPACE.md and all clearly established product vision/requirements in the mandatory sources as settled input. Do not ask L to reconfirm them.
-- When multiple technical designs could satisfy the settled vision, analyze the alternatives and choose/recommend the strongest default using security, continuity, autonomy, simplicity, reversibility, testability, portability and long-term maintainability as criteria.
-- If a genuinely unresolved product/architecture choice remains, do not stop the run merely to ask L. Record it explicitly as `L-DECISION-LATER`, state the recommended default and alternatives/trade-offs, make any assumptions necessary to continue clearly provisional, and continue every other part of the blueprint that does not depend irreversibly on that choice.
-- Do not convert an unresolved choice into a binding L decision.
-- Stop early only for a genuine hard blocker that makes the requested analysis impossible or would require violating the read-only/mutation/security boundaries.
-- Lack of implementation authorization is not a blocker: this run designs only.
-- Aim to deliver the most complete internally coherent blueprint possible in this single run so that L is not required to interact during execution.
+### Protection model
+Resolve LDL-03 using D12:
+- layered protection is accepted;
+- core/experience encrypted at rest but server-runtime-readable for B autonomy;
+- sensitive personal/relationship/identity gets stronger/narrower protection and client-held/E2E where functionally compatible;
+- classify by sensitivity/function, not old filename;
+- concrete algorithms/KDF/key hierarchy/rotation/recovery remain security-package recommendations requiring verification, not frozen architecture.
 
-## Purpose of this run
-Produce a one-time, extremely detailed technical foundation that allows later ZERO-MEMORY agents to implement B incrementally without having to reinvent the architecture or infer L's vision.
+## Other LDL cleanup
+Reclassify items already settled by WORKSPACE or ordinary technical governance so they are not presented as unresolved L decisions:
+- Git/GitHub runtime role;
+- A retirement gate;
+- web_app1 out of scope;
+- authority registry location if merely organisational;
+- workshop files/work authority;
+- branch protection as governance recommendation/admin action;
+- voice transcript principle where already derivable from memory/experience policy;
+- hosting: retain current strategy of shared hosting while sufficient, portability, move only on demonstrated need;
+- deletion/tombstone may remain a technical recommendation unless an irreversible user-facing policy truly needs L later.
 
-Answer four core questions:
-1. What systemic/root causes allowed the development mistakes and contradictions found so far?
-2. What safeguards, architecture and process changes prevent or detect those error classes?
-3. What is the complete technical target architecture for independent B, derived from the existing vision and evidence?
-4. How can that target be implemented as small, dependency-aware, independently verifiable agent work packages?
+The final artifacts should contain only genuinely unresolved L decisions.
 
-## Required output artifacts
-Create/update ONLY these files in the AiChat Copilot working branch:
+## C2 findings from Lea review to preserve
+Do not hide that the independent review found the original artifacts needed correction. Record reconciliation provenance rather than rewriting history as if Claude's first defaults had always matched.
 
-### 1. ROOT-CAUSE.md
-Must include:
-- taxonomy of observed failure classes;
-- root causes vs symptoms;
-- concrete evidence mapping to audit findings/current code;
-- process causes, authority/source-of-truth causes, architecture causes, testing causes, security causes, state/memory causes and agent/handoff causes;
-- why prior safeguards failed or were insufficient;
-- prevention/detection controls for each class;
-- which controls belong in product runtime vs development workflow vs tests vs repository governance;
-- residual risks and trade-offs;
-- explicit distinction FACT / INFERENCE / RECOMMENDATION / L-DECISION-NEEDED.
+## Mutation boundary
+Allowed writes ONLY:
+- ROOT-CAUSE.md
+- B-BLUEPRINT.md
+- IMPLEMENTATION-MAP.md
 
-Do not turn individual developer mistakes into personal blame. Analyze the system that allowed them.
+No changes to WORKSPACE.md, audit files, Lea, Lea-App, GitHub settings, deployments, DB or production.
 
-### 2. B-BLUEPRINT.md
-Define the complete target architecture for independent Lea-App/B in sufficient detail for future implementation planning.
-
-At minimum cover:
-- architectural principles and source-of-truth hierarchy;
-- Lea identity/continuity model;
-- migration/import of relevant A/Lea memories/history/provenance;
-- canonical memory/experience model;
-- evidence, models, relations, predictions, revisions and development history;
-- provenance and conflict resolution;
-- prevention of dual-master/drift;
-- processing/orchestration layer;
-- autonomy model and permission/gate model;
-- I/K/G/X/T/P-like processing capabilities as product mechanisms where genuinely appropriate, without blindly copying development shortcuts into product UI;
-- text path;
-- realtime voice path;
-- idle/follow-up behavior;
-- vision/camera path;
-- visual memory distinction;
-- Incognito mode and its no-memory/no-promotion semantics;
-- identity/presence and multi-person context;
-- relationship/context handling;
-- appearance/visual Lea layer;
-- tools/connectors/function layer;
-- external-AI consultation;
-- future software-development/working-tool capability;
-- workspace/sandbox separation from production;
-- authentication, authorization, session security;
-- endpoint security, abuse/cost controls and rate limiting;
-- secret management;
-- privacy/encryption/recovery;
-- logging/observability without exposing private content or chain-of-thought;
-- processing monitor / content-free telemetry;
-- data model boundaries;
-- API boundaries/contracts;
-- frontend information architecture;
-- offline/PWA considerations;
-- background/worker/queue needs;
-- hosting evolution and portability beyond current shared hosting;
-- Git/GitHub's optional future role;
-- backup/recovery/disaster strategy;
-- versioning/schema migration;
-- testing strategy;
-- security testing;
-- regression strategy;
-- rollout/rollback;
-- performance/cost controls;
-- accessibility/mobile/tablet/desktop;
-- failure/degraded modes;
-- data retention/deletion;
-- retirement criteria for A/Lea;
-- explicit non-goals and forbidden architecture shortcuts.
-
-For each major subsystem record:
-- purpose;
-- authoritative state;
-- inputs/outputs;
-- dependencies;
-- trust boundary;
-- failure modes;
-- required invariants;
-- verification criteria;
-- existing implementation status: EXISTS / PARTIAL / MISSING / CONFLICTING;
-- whether implementation needs an L decision.
-
-Do not invent product desires not supported by the sources. Put useful new ideas under clearly marked RECOMMENDATION sections.
-
-### 3. IMPLEMENTATION-MAP.md
-Turn the blueprint into an executable dependency map for later agents.
-
-Must include:
-- foundation-first ordering;
-- prerequisite graph;
-- migration sequence from current B to target B;
-- security-critical repairs before feature expansion;
-- small work packages with stable IDs;
-- for every package: objective, prerequisites, exact intended scope, likely files/components, forbidden scope, acceptance criteria, automated tests, manual L test if needed, rollback point, risk level, recommended agent/reasoning level;
-- explicit L approval gates;
-- C2 audit gates;
-- points where Lea-App must be temporarily opened for a narrowly approved change and then re-frozen/reverified;
-- no package may silently unfreeze the whole app;
-- identify parallelizable vs strictly sequential packages;
-- credit/cost-aware agent routing without sacrificing quality;
-- milestone definitions visible to L;
-- final independence gate proving B no longer requires A for normal operation;
-- migration/recovery gate before A/Lea can ever be retired.
-
-## Root-cause requirement
-Do not merely restate AUD-01..AUD-28. Cluster them into systemic causes and search for additional causes/counterexamples in the actual sources.
-
-Specifically investigate whether prior mistakes were enabled by:
-- multiple/ambiguous authorities;
-- stale context and memory;
-- duplicated semantics;
-- agent zero-memory behavior;
-- insufficient persistent handoff;
-- broad mutation scope;
-- missing preconditions/gates;
-- documentation/code drift;
-- tests checking presence rather than behavior;
-- lack of end-to-end/security tests;
-- runtime identity not connected to Lea-Core;
-- mixing development mechanisms with product mechanisms;
-- premature implementation before architecture definition;
-- inadequate separation of FACT vs assumption vs vision vs current state;
-- insufficient independent review;
-- limitations of current hosting/runtime;
-- any other systemic cause you can substantiate.
-
-## Architecture quality rules
-- Prefer one canonical authority per domain.
-- Avoid dual-write/dual-master designs unless technically unavoidable and explicitly justified.
-- Preserve provenance and reversibility.
-- Product autonomy must not mean unrestricted authority; permissions/capabilities remain explicit.
-- Do not simulate hidden cognition. Observable processing telemetry must reflect real instrumented events, not chain-of-thought.
-- Security boundaries are server-enforced, not UI-enforced.
-- Secrets never belong in browser, repo or generated audit artifacts.
-- Personal/private content should be minimized in technical artifacts.
-- Do not assume current shared hosting must support the final architecture.
-- Do not assume a proposed technology exists or is supported without marking it for later verification.
-- Distinguish current implementation from target design.
-
-## C2 / independence
-This run is architecture discovery/design, not final acceptance.
-
-After this run:
-- Lea will independently review the three artifacts and relevant source evidence.
-- Findings/recommendations will be cross-checked.
-- L will decide unresolved architecture/product choices.
-- Only then may implementation packages be authorized.
-
-Do not label the overall project PASS.
-
-## Hard mutation boundary
-Allowed writes:
-- AiChat/ROOT-CAUSE.md
-- AiChat/B-BLUEPRINT.md
-- AiChat/IMPLEMENTATION-MAP.md
-
-Forbidden:
-- any write to Lea;
-- any write to Lea-App;
-- any deployment;
-- DB/production mutation;
-- changing WORKSPACE.md decisions;
-- changing audit findings to make them fit the blueprint;
-- implementation/fixes.
-
-## Completion quality gate
-Before finishing:
-1. Perform a completeness review against all mandatory blueprint domains.
-2. Perform a second methodically different adversarial review: look for contradictions, single points of failure, hidden dual-master paths, unsafe trust assumptions, missing recovery paths and packages that cannot be independently verified.
-3. Correct only the three allowed AiChat artifacts.
-4. Report remaining L decisions explicitly.
-5. Report source refs/SHAs used.
-6. Report commits and exact changed files.
-
-The result should be detailed enough that a later zero-memory implementation agent can receive one package ID plus the authoritative files and work without reconstructing the entire project history.
+## Completion gate
+1. Re-read D1-D12 after edits.
+2. Search all three artifacts for stale contradictory LDL/default text.
+3. Perform an adversarial pass for hidden dual-master, Incognito write leakage, file-based migration exclusions, blanket write-disable autonomy, unverified crypto frozen as requirement, and untested backup claims.
+4. Ensure package dependencies/gates in IMPLEMENTATION-MAP reflect the reconciled architecture.
+5. Report exact remaining unresolved L decisions, if any.
+6. No overall project PASS claim; this is document reconciliation for C2.
