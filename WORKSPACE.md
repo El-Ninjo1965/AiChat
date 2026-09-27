@@ -174,3 +174,25 @@ Autonomy principles:
 - As B demonstrates reliable backup, restore, verification and bounded capability enforcement, Lea's permitted autonomous action scope may expand.
 
 Target principle: greater demonstrated recoverability can justify greater autonomy; autonomy never removes explicit capability boundaries.
+
+
+### D11 — Canonical B memory model
+B requires a new canonical memory/experience model rather than treating current V1 or V2 as the final master.
+
+- V1 contains useful semantic concepts (evidence, models, relations, predictions, review/revision state) but stores semantic content in plaintext and is not the final privacy architecture.
+- V2 provides useful encrypted-envelope, relation and append-only foundations but is session-bound and too semantically thin to support B's independent long-term identity, provenance, revision, relationship scope and autonomous retrieval/processing.
+- The target canonical model (working name M3) combines the useful semantic/development concepts of V1 with the encrypted-envelope/privacy and append-only principles proven in V2.
+- M3 is an evolution/convergence of V1+V2, not justification for discarding proven mechanisms without cause.
+- V1/V2 remain migration sources until verified transfer; no destructive migration is implied.
+- Exact schema/API design remains subject to package-level C2 verification before implementation.
+
+### D12 — Layered protection compatible with B autonomy
+B uses protection classes appropriate to the data and required runtime capability.
+
+- Lea's own core/experience state must be encrypted at rest but available to authorised B server-side runtime processing, because independent continuity, retrieval, Voice and later background/autonomous processing cannot depend on an unlocked browser.
+- More sensitive personal/relationship/identity material receives a stronger protected-data treatment and narrower access scope; client-held/end-to-end keys may be used where compatible with the required function.
+- Classification is based on sensitivity and functional need, not merely on which old source file contained an item.
+- A single all-client-only encryption model must not make B incapable of independent operation.
+- A single all-server-readable model must not unnecessarily expose sensitive personal material.
+- Exact algorithms, KDF parameters, key hierarchy, rotation, device transfer and recovery design are security implementation decisions requiring dedicated verification; Claude's current concrete crypto choices are recommendations, not frozen requirements.
+- Recovery under D10 must include the keys required to restore encrypted canonical state, with restore drills for critical tiers.
