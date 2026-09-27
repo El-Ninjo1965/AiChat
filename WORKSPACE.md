@@ -150,3 +150,27 @@ During the active Lea research/development phase, the processing monitor is enab
 - Monitor visibility and telemetry persistence are separate controls.
 - The normal future everyday-use default may be reduced/hidden after the research phase without changing the underlying processing.
 - No raw telemetry retention duration is decided by this decision; the proposed 90-day value remains unapproved pending technical/privacy justification.
+
+
+### D10 — Risk-based autonomy and recovery-by-design
+B uses a risk-based capability model rather than a blanket rule that write-capable connectors are disabled.
+
+Autonomy is determined by impact radius, reversibility, recoverability, permission scope and external consequence.
+
+Recovery principles:
+- Before higher-impact autonomous changes, establish a known-good recoverable state appropriate to the affected domain.
+- Git commit/tag rollback is sufficient only for code-only reversible changes; it does not substitute for database, memory, configuration or file recovery.
+- Persistent state changes use appropriate transactions/version history/snapshots; schema, migration and broad system changes require stronger backups/snapshots.
+- Keep multiple backup generations so a defect discovered later does not leave only a contaminated recent backup.
+- A backup is not considered reliable merely because it exists; critical recovery paths require restore verification/drills.
+- Backup/recovery scope must cover the state actually at risk: code, canonical memory/data, database/schema, configuration and relevant stored files.
+- Small, low-impact and readily reversible operations must not be burdened with unnecessary full-system backups.
+
+Autonomy principles:
+- Read/research/analysis may normally be highly autonomous within granted capabilities.
+- Reversible writes inside an explicitly authorised scope may become autonomous when adequate recovery and verification exist.
+- Higher-impact external actions require stronger permission/gates according to risk.
+- Destructive, irreversible or otherwise critical actions retain explicit safeguards even if a connector is generally autonomous.
+- As B demonstrates reliable backup, restore, verification and bounded capability enforcement, Lea's permitted autonomous action scope may expand.
+
+Target principle: greater demonstrated recoverability can justify greater autonomy; autonomy never removes explicit capability boundaries.
