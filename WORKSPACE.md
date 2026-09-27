@@ -100,3 +100,17 @@ The current deep audit exists because reliability problems and prior development
 
 This decision confirms the existing product direction rather than restarting development on A. Lea-App remains FROZEN / STRICTLY READ-ONLY under D3 until concrete audit findings and proposed change packages are presented to and explicitly approved by L.
 
+
+
+### D6 — Incognito memory semantics
+Incognito does not create a second Lea and does not make Lea forget her existing continuity.
+
+During an Incognito session:
+- Lea may read and use the existing authoritative identity, memories, experiences, relationship/context state and other pre-session continuity normally.
+- Existing long-term state is read-only for the Incognito session: it must not be revised, reweighted, supplemented or otherwise changed because of Incognito content.
+- Session-local context may be retained only as needed to sustain that Incognito conversation.
+- Incognito content must not create persistent memories, evidence, models, predictions, learning results, relationship changes or other long-term development effects.
+- On Incognito exit, the session-local Incognito context is logically discarded and must not be reused later.
+- A specific Incognito item may leave Incognito only through an explicit, deliberate promotion by L; promotion must be scoped to the specific item and must not implicitly promote the rest of the session.
+
+Target invariant: Incognito changes what Lea may WRITE/LEARN from the session, not what pre-existing Lea may KNOW/READ.
