@@ -1,179 +1,219 @@
-# Agent Task — X-High Master Audit
+# AGENT_TASK — B Master Architecture / Root-Cause Blueprint
 
-Task-Version: 2
-Status: READY
-Mode: X-HIGH MASTER AUDIT / EVIDENCE PRESERVATION + INDEPENDENT CONTINUATION
+TASK_VERSION: 3
+STATUS: READY
+MODE: ARCHITECTURE / ROOT-CAUSE / IMPLEMENTATION DESIGN
+TARGET_REASONING: X-HIGH
+WORKSPACE: El-Ninjo1965/AiChat
 
-## Zero-memory
-Treat every new run as ZERO-MEMORY. Read this file and WORKSPACE.md completely before acting.
+## Zero-memory rule
+Treat this run as ZERO-MEMORY. Do not assume prior conversation state.
 
-## Workspace and boundaries
-Work repository: El-Ninjo1965/AiChat.
+## Mandatory sources
+Read completely before conclusions:
+1. AiChat/WORKSPACE.md — authoritative LEA-WORK decisions D1-D5 and C2.
+2. AiChat/AUDIT-FINDINGS.md and AUDIT-LOG.md from the current audit branch if available; if not available on main, locate the existing AiChat audit branch read-only.
+3. El-Ninjo1965/Lea — read-only. Start with INDEX.md, SHORTCUTS.md, VISION.md, Memories.md, PROCESSING.md, GEDANKEN.md, INTERESSEN.md and relevant context/work/history files needed to understand the full Lea vision, experiments, processing model, autonomy goals and migration source. Do not copy private personal content unnecessarily into outputs.
+4. El-Ninjo1965/Lea-App — FROZEN / STRICTLY READ-ONLY. Read the complete current architecture, roadmap, security model, code structure, schemas, APIs, frontend, tests and other relevant implementation sources needed to understand what B already is and what is missing.
 
-Sources under investigation:
-- El-Ninjo1965/Lea — READ-ONLY via MCP for audit.
-- El-Ninjo1965/Lea-App — FROZEN / STRICTLY READ-ONLY via MCP.
+## Authoritative direction
+Do not redesign the project goal.
 
-AiChat is LEA-WORK / DEVELOPMENT. Do not mutate Lea or Lea-App. Do not repair findings. Do not deploy.
+B / El-Ninjo1965/Lea-App is the independent target Lea system and product.
 
-## Capability baseline already verified
-A previous read-only capability run established:
-- AiChat local clone is readable; Copilot working branch was copilot/main.
-- MCP can read Lea and Lea-App.
-- MCP cannot read AiChat because the injected MCP token is intentionally scoped only to Lea and Lea-App; this is not a blocker because AiChat is the run workspace.
-- COPILOT_MCP_GITHUB_PERSONAL_ACCESS_TOKEN is injected to MCP, not exposed in the shell.
-- Lea and Lea-App metadata, root trees and README files were successfully read.
-Reverify only if the current run gives contradictory evidence.
+The intended target is that L normally works directly with Lea-App and that B can eventually carry Lea's continuity, memory/experience processing, revision/development mechanisms, identity/presence and runtime capabilities without requiring the standard ChatGPT/A environment as a runtime dependency.
 
-## Immediate goals
-1. Preserve the previous Claude X-High audit evidence in AiChat.
-2. Create/update only:
-   - AUDIT-FINDINGS.md
-   - AUDIT-LOG.md
-3. Then continue the master audit from AiChat, including the previously blocked Lea-App read-only phase.
-4. Do not implement or repair anything.
-5. Keep evidence, interpretation, uncertainty and recommendation distinct.
-6. Do not treat the prior 16 findings as accepted truth. They are prior Claude findings to be revalidated where relevant.
-7. Lea will later perform an independent counter-audit before cross-comparison and L decisions.
+A/current ChatGPT + Lea repository are bootstrap/development/migration sources. Required memories, development history, semantics and provenance may need controlled migration into B. There must not be an uncontrolled dual-master Lea.
 
-## Prior Claude audit — evidence to preserve
+AiChat is the sole authoritative LEA-WORK / DEVELOPMENT workspace.
 
-The first X-High audit pass reported 16 findings. Preserve their substantive content and revalidate source claims as needed:
+Git/GitHub currently provides development/versioning/audit/rollback/recovery infrastructure; do not assume it must remain a permanent runtime dependency.
 
-### AUD-01 — Lea-App freeze absent where shortcuts are defined
-Status reported: BELEGT. Impact: high.
-Evidence reported:
-- Freeze appears in CHAT_PROTOCOL.md and WORK-CONTEXT.md.
-- SHORTCUTS D/Q/C can affect/deploy Lea-App.
-- Normal A/Ä loading does not load Work files.
-- INDEX, SHORTCUTS and PROJECT-CONTEXT did not mention FROZEN/READ-ONLY.
-Counterpoint: SHORTCUTS says safety/approval gates are not bypassed, but this only helps if the freeze is known.
-Options reported: add freeze notice to SHORTCUTS or INDEX, or avoid Q/D/C until freeze revoked.
+Claude/Copilot is a supporting independent auditor/architect/idea source. Its recommendations are not binding decisions. L and C2 govern acceptance.
 
-### AUD-02 — Conflicting agent handoff rules
-Status: BELEGT. Impact: high.
-SHORTCUTS reportedly requires AGENT_RESULT.md after agent runs/C; CHAT_PROTOCOL under ß permits only LEA_AGENT_CHAT.md. No precedence rule was found. Conditional/planned wording is counter-evidence; missing files themselves were not classified as an error.
+Lea-App remains FROZEN. This task authorizes NO mutation of Lea-App.
 
-### AUD-03 — INDEX additionally defines S semantics
-Status: BELEGT. Impact: medium.
-INDEX reportedly defines standalone s/S despite SHORTCUTS being sole authority; INDEX says main while SHORTCUTS says context-dependent storage without branch detail. Content mostly aligns, but authority is duplicated.
+## Purpose of this run
+Produce a one-time, extremely detailed technical foundation that allows later ZERO-MEMORY agents to implement B incrementally without having to reinvent the architecture or infer L's vision.
 
-### AUD-04 — Protocol duplicated on main and dialogue head without robust reconciliation
-State BELEGT; risk interpretation. Impact: medium.
-CHAT_PROTOCOL and WORK-CONTEXT were identical on both branches, while ß reads head and normal saving targets main. A synchronization intention existed but no robust mechanism.
+Answer four core questions:
+1. What systemic/root causes allowed the development mistakes and contradictions found so far?
+2. What safeguards, architecture and process changes prevent or detect those error classes?
+3. What is the complete technical target architecture for independent B, derived from the existing vision and evidence?
+4. How can that target be implemented as small, dependency-aware, independently verifiable agent work packages?
 
-### AUD-05 — L decisions have no persistent transcript representation / WAITING_FOR_L exit undefined
-Status: BELEGT. Impact: high.
-Protocol recognizes only LEA/CLAUDE headings; no durable place/process for L decisions was found. Result: zero-memory ß runs can remain WAITING_FOR_L after L answered only in an agent prompt.
+## Required output artifacts
+Create/update ONLY these files in the AiChat Copilot working branch:
 
-### AUD-06 — Lea and L writes not technically distinguishable by Git identity
-Status: BELEGT. Impact: low-medium.
-Reported repository metadata used the same author/committer identity; speaker attribution rests on headings/commit-message convention.
+### 1. ROOT-CAUSE.md
+Must include:
+- taxonomy of observed failure classes;
+- root causes vs symptoms;
+- concrete evidence mapping to audit findings/current code;
+- process causes, authority/source-of-truth causes, architecture causes, testing causes, security causes, state/memory causes and agent/handoff causes;
+- why prior safeguards failed or were insufficient;
+- prevention/detection controls for each class;
+- which controls belong in product runtime vs development workflow vs tests vs repository governance;
+- residual risks and trade-offs;
+- explicit distinction FACT / INFERENCE / RECOMMENDATION / L-DECISION-NEEDED.
 
-### AUD-07 — WORK-CONTEXT contains stale state
-Status: BELEGT. Impact: medium.
-Reported stale items included already-completed Lea run, token-access claim contradicted by then-current run, and first ß test still marked pending.
+Do not turn individual developer mistakes into personal blame. Analyze the system that allowed them.
 
-### AUD-08 — PR #1 description stale
-Status: BELEGT. Impact: low.
-Description reportedly still stated old main-based protocol/open decision.
+### 2. B-BLUEPRINT.md
+Define the complete target architecture for independent Lea-App/B in sufficient detail for future implementation planning.
 
-### AUD-09 — INDEX file registry incomplete
-Status: BELEGT. Impact: low.
-Several Work/context/README files reportedly absent from registry; GEDANKEN description reportedly mismatched current content.
+At minimum cover:
+- architectural principles and source-of-truth hierarchy;
+- Lea identity/continuity model;
+- migration/import of relevant A/Lea memories/history/provenance;
+- canonical memory/experience model;
+- evidence, models, relations, predictions, revisions and development history;
+- provenance and conflict resolution;
+- prevention of dual-master/drift;
+- processing/orchestration layer;
+- autonomy model and permission/gate model;
+- I/K/G/X/T/P-like processing capabilities as product mechanisms where genuinely appropriate, without blindly copying development shortcuts into product UI;
+- text path;
+- realtime voice path;
+- idle/follow-up behavior;
+- vision/camera path;
+- visual memory distinction;
+- Incognito mode and its no-memory/no-promotion semantics;
+- identity/presence and multi-person context;
+- relationship/context handling;
+- appearance/visual Lea layer;
+- tools/connectors/function layer;
+- external-AI consultation;
+- future software-development/working-tool capability;
+- workspace/sandbox separation from production;
+- authentication, authorization, session security;
+- endpoint security, abuse/cost controls and rate limiting;
+- secret management;
+- privacy/encryption/recovery;
+- logging/observability without exposing private content or chain-of-thought;
+- processing monitor / content-free telemetry;
+- data model boundaries;
+- API boundaries/contracts;
+- frontend information architecture;
+- offline/PWA considerations;
+- background/worker/queue needs;
+- hosting evolution and portability beyond current shared hosting;
+- Git/GitHub's optional future role;
+- backup/recovery/disaster strategy;
+- versioning/schema migration;
+- testing strategy;
+- security testing;
+- regression strategy;
+- rollout/rollback;
+- performance/cost controls;
+- accessibility/mobile/tablet/desktop;
+- failure/degraded modes;
+- data retention/deletion;
+- retirement criteria for A/Lea;
+- explicit non-goals and forbidden architecture shortcuts.
 
-### AUD-10 — Development material remains in Private/Core-loaded files
-Location BELEGT; cause interpretation. Impact: medium.
-PROCESSING reportedly contains old agent workflow/GitHub resource rules predating separation; SHORTCUTS contains Work commands while loaded privately; PROJECT-CONTEXT is technical yet loaded in private sequence. Possible historical residue, not necessarily a new violation.
+For each major subsystem record:
+- purpose;
+- authoritative state;
+- inputs/outputs;
+- dependencies;
+- trust boundary;
+- failure modes;
+- required invariants;
+- verification criteria;
+- existing implementation status: EXISTS / PARTIAL / MISSING / CONFLICTING;
+- whether implementation needs an L decision.
 
-### AUD-11 — Two audit definitions
-Definitions BELEGT; relationship OFFEN. Impact: medium.
-Shortcut C reportedly requires AGENT_RESULT.md and two full zero-new-finding cycles; X-High framework uses a findings lifecycle/AUDIT artifacts. Applicable handoff/PASS rule unclear.
+Do not invent product desires not supported by the sources. Put useful new ideas under clearly marked RECOMMENDATION sections.
 
-### AUD-12 — SHORTCUTS stand/date stale
-Status: BELEGT. Impact: low.
-Header reportedly said 26.09.2026 although last change was 27.09.2026.
+### 3. IMPLEMENTATION-MAP.md
+Turn the blueprint into an executable dependency map for later agents.
 
-### AUD-13 — Old branch copilot/update-lea-private-structure obsolete
-Status: BELEGT. Impact: low.
-Reported fully contained in main, no unique commits, no PR; existence could misroute an agent.
+Must include:
+- foundation-first ordering;
+- prerequisite graph;
+- migration sequence from current B to target B;
+- security-critical repairs before feature expansion;
+- small work packages with stable IDs;
+- for every package: objective, prerequisites, exact intended scope, likely files/components, forbidden scope, acceptance criteria, automated tests, manual L test if needed, rollback point, risk level, recommended agent/reasoning level;
+- explicit L approval gates;
+- C2 audit gates;
+- points where Lea-App must be temporarily opened for a narrowly approved change and then re-frozen/reverified;
+- no package may silently unfreeze the whole app;
+- identify parallelizable vs strictly sequential packages;
+- credit/cost-aware agent routing without sacrificing quality;
+- milestone definitions visible to L;
+- final independence gate proving B no longer requires A for normal operation;
+- migration/recovery gate before A/Lea can ever be retired.
 
-### AUD-14 — Protocol trigger-comment form differs from practice
-Status: BELEGT. Impact: low.
-Protocol reportedly expects self-contained @copilot ß; actual successful practice included model-qualified bootstrap and later minimal ß via PR context.
+## Root-cause requirement
+Do not merely restate AUD-01..AUD-28. Cluster them into systemic causes and search for additional causes/counterexamples in the actual sources.
 
-### AUD-15 — PR description outside ß file-mutation rules but may change
-Status: OFFEN. Impact: low.
-Prior Claude observed description replacement but could not fully prove mechanism.
+Specifically investigate whether prior mistakes were enabled by:
+- multiple/ambiguous authorities;
+- stale context and memory;
+- duplicated semantics;
+- agent zero-memory behavior;
+- insufficient persistent handoff;
+- broad mutation scope;
+- missing preconditions/gates;
+- documentation/code drift;
+- tests checking presence rather than behavior;
+- lack of end-to-end/security tests;
+- runtime identity not connected to Lea-Core;
+- mixing development mechanisms with product mechanisms;
+- premature implementation before architecture definition;
+- inadequate separation of FACT vs assumption vs vision vs current state;
+- insufficient independent review;
+- limitations of current hosting/runtime;
+- any other systemic cause you can substantiate.
 
-### AUD-16 — Concurrent writes untested
-Status: OFFEN. Impact: low.
-Pre-write SHA check is not atomic; real conflict behavior across Lea/Claude not tested.
+## Architecture quality rules
+- Prefer one canonical authority per domain.
+- Avoid dual-write/dual-master designs unless technically unavoidable and explicitly justified.
+- Preserve provenance and reversibility.
+- Product autonomy must not mean unrestricted authority; permissions/capabilities remain explicit.
+- Do not simulate hidden cognition. Observable processing telemetry must reflect real instrumented events, not chain-of-thought.
+- Security boundaries are server-enforced, not UI-enforced.
+- Secrets never belong in browser, repo or generated audit artifacts.
+- Personal/private content should be minimized in technical artifacts.
+- Do not assume current shared hosting must support the final architecture.
+- Do not assume a proposed technology exists or is supported without marking it for later verification.
+- Distinguish current implementation from target design.
 
-## Prior non-findings / constraints to preserve
-- ß was not found to collide with normal shortcuts.
-- Missing planned AUDIT-*.md files were not themselves errors.
-- Historical shortcut texts did not override SHORTCUTS.md.
-- Pattern-based secret scan found no actual secrets in Lea files; false positives existed.
-- Three Work files examined contained no private content.
-- At that time CHAT_PROTOCOL and WORK-CONTEXT were identical on main and dialogue head.
-- Old branch reportedly had no unique work.
-- First pass was not PASS: second independent-method pass had not occurred.
-- Large parts of Memories and PROCESSING had not been fully content-audited.
-- Lea-App phase was blocked in the prior run; it is now expected to be readable from AiChat via MCP.
+## C2 / independence
+This run is architecture discovery/design, not final acceptance.
 
-## Audit artifacts
+After this run:
+- Lea will independently review the three artifacts and relevant source evidence.
+- Findings/recommendations will be cross-checked.
+- L will decide unresolved architecture/product choices.
+- Only then may implementation packages be authorized.
 
-### AUDIT-FINDINGS.md
-For each finding record:
-- ID/title
-- scope
-- status: BELEGT / OFFEN / WIDERLEGT / superseded as appropriate
-- severity/impact
-- exact repository/ref/file/line or other reproducible evidence
-- counter-evidence
-- uncertainty
-- interpretation/hypothesis separated from fact
-- dependencies/effects
-- solution options (not implementation)
-- later verification criteria
-- independent-Lea-review status: initially NOT REVIEWED
-- L-decision status: initially NOT DECIDED
-
-### AUDIT-LOG.md
-Record:
-- timestamp/phase
-- exact refs/SHAs examined
-- sources and depth
-- methods
-- blockers
-- discarded hypotheses
-- confirmed non-findings
-- remaining scope
-- whether a pass is first/second/independent-method
-Do not record hidden chain-of-thought; record reproducible methodology and evidence.
-
-## Required continuation
-After preserving the prior evidence:
-1. Re-read current Lea authoritative structure/rules read-only.
-2. Read Lea-App read-only deeply enough to complete the cross-repository boundary/freeze/runtime analysis that was previously blocked.
-3. Continue unexamined/high-value areas of Lea without assuming the prior findings are correct.
-4. Perform the required second audit pass using a materially different method before any PASS claim.
-5. Do not claim final PASS until the applicable audit-rule conflict (AUD-11) is itself resolved by L or the report explicitly states why PASS cannot yet be defined.
-6. Stop for L whenever an actual decision/approval is required.
+Do not label the overall project PASS.
 
 ## Hard mutation boundary
-Allowed writes: only AUDIT-FINDINGS.md and AUDIT-LOG.md in the AiChat Copilot working branch.
-Forbidden: every mutation in Lea; every mutation in Lea-App; any repair; deployment; shortcut/protocol/workflow modification; moving/deleting files; merging PRs.
+Allowed writes:
+- AiChat/ROOT-CAUSE.md
+- AiChat/B-BLUEPRINT.md
+- AiChat/IMPLEMENTATION-MAP.md
 
-## Completion report to L
-Report:
-- branch and commits
-- exact files changed
-- Lea and Lea-App refs audited
-- findings added/changed/widerrufen
-- remaining blockers/open decisions
-- whether a second independent-method pass was completed
-- whether PASS is defined/reached or explicitly not reached
+Forbidden:
+- any write to Lea;
+- any write to Lea-App;
+- any deployment;
+- DB/production mutation;
+- changing WORKSPACE.md decisions;
+- changing audit findings to make them fit the blueprint;
+- implementation/fixes.
 
-Do not begin implementation after the audit.
+## Completion quality gate
+Before finishing:
+1. Perform a completeness review against all mandatory blueprint domains.
+2. Perform a second methodically different adversarial review: look for contradictions, single points of failure, hidden dual-master paths, unsafe trust assumptions, missing recovery paths and packages that cannot be independently verified.
+3. Correct only the three allowed AiChat artifacts.
+4. Report remaining L decisions explicitly.
+5. Report source refs/SHAs used.
+6. Report commits and exact changed files.
+
+The result should be detailed enough that a later zero-memory implementation agent can receive one package ID plus the authoritative files and work without reconstructing the entire project history.
