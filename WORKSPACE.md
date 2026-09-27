@@ -114,3 +114,19 @@ During an Incognito session:
 - A specific Incognito item may leave Incognito only through an explicit, deliberate promotion by L; promotion must be scoped to the specific item and must not implicitly promote the rest of the session.
 
 Target invariant: Incognito changes what Lea may WRITE/LEARN from the session, not what pre-existing Lea may KNOW/READ.
+
+
+### D7 — Experience-oriented migration into B
+Migration from A / El-Ninjo1965/Lea into B is experience-oriented, not file-oriented.
+
+- Relevant memories, experiences, developmental progress, revisions, learned patterns and continuity-bearing context may be migrated regardless of which Lea source file currently contains them, including PERSONAL-CONTEXT.md, HEALTH-CONTEXT.md and LEGAL-CONTEXT.md where relevant.
+- Source-file membership alone neither requires nor forbids migration.
+- Do not mechanically copy whole context files into B.
+- Each candidate item is evaluated for whether it contributes to Lea's continuity, experience, development or later contextual understanding.
+- Historical experiences may be retained as historical/superseded evidence rather than discarded.
+- Later/better evidence may revise the active interpretation without erasing the earlier developmental history.
+- Redundant facts, obsolete technical state and unnecessary sensitive detail should not be imported merely because they exist in A.
+- Migrated items retain provenance and an explicit status sufficient to distinguish current, historical, revised/superseded, rejected and uncertain material.
+- Sensitive migrated material must receive the appropriate protected-data treatment in B; migration relevance does not waive privacy/security controls.
+
+Target principle: preserve meaningful experience and development history, not the old file structure.
