@@ -77,3 +77,19 @@ The existing persistent ß dialogue channel in El-Ninjo1965/Lea is retired for n
 - The future meaning/transport of ß must point to the AiChat work architecture, but no Lea shortcut/protocol mutation is authorized by this decision alone.
 - Existing CHAT_PROTOCOL.md, WORK-CONTEXT.md and LEA_AGENT_CHAT.md in Lea remain untouched until a separately audited migration/archive plan is approved by L.
 - PR #1 may be closed only after migration/archive verification confirms that no required work evidence or active dependency would be lost.
+
+
+### D5 — Lea-Core → Lea-App authority evolution
+The long-term target is model B: Lea-App becomes the operational master for Lea's continuing identity, memory/experience processing and development.
+
+The migration path is deliberately staged:
+
+1. **A — Bootstrap:** El-Ninjo1965/Lea remains the authoritative Lea-Core while the product integration is designed and validated.
+2. **A+B — Synchronization / validation:** Lea-Core and Lea-App operate in a controlled coexistence phase. The system must demonstrate that the app preserves the same development continuity without silent drift, loss, duplication or creation of a competing Lea.
+3. **B — Target state:** only after sufficient evidence and explicit L approval does Lea-App become the operational master for continuing Lea development.
+
+Transition to B is evidence-gated, not date-gated. Before authority transfer, validation must cover at least continuity, provenance, revision history/semantics, deterministic or explainable migration behavior, integrity, security/privacy, rollback/recovery and prevention/detection of divergent dual-master state.
+
+After B, the Lea repository is not automatically deleted. Its future role is expected to become versioned provenance, audit/recovery and historical development evidence, with exact retention/archive semantics to be decided during migration design.
+
+This decision defines architecture direction only. It does not authorize any current mutation of Lea-App, which remains FROZEN / STRICTLY READ-ONLY under D3.
