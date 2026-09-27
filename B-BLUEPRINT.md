@@ -191,6 +191,7 @@ Rule for later agents: a package that depends on an LDL may start only after its
 
 **Status:**
 - **CONFLICTING.** FACT: two different hardcoded prompts (`chat.php`, `session.php`); voice gets no memory (OBS-03).
+- **Transition note:** IMPLEMENTATION-MAP IM-I01 may start the IC as a versioned server-side file before M3 exists. IM-M03 migrates it into M3 by a single cut-over; the file is then removed. There is never more than one live IC home (I-DM-1).
 
 **L decision:** LDL-08 (initial IC content).
 
@@ -212,7 +213,7 @@ Rule for later agents: a package that depends on an LDL may start only after its
 | Field | Plaintext? | Notes |
 |---|---|---|
 | `id` | yes | DB id |
-| `record_uid` | yes | opaque, 128-bit random, stable across versions? **No:** per version. A version group uses `lineage_uid`. |
+| `record_uid` | yes | opaque, 128-bit random, one per version; a version group uses `lineage_uid` |
 | `lineage_uid` | yes | groups versions of the same logical item (successor of V2 `group_id`) |
 | `kind_code` | yes (opaque code) | e.g. `EV` evidence, `MD` model, `PR` prediction, `PRR` prediction result, `RV` review item, `IC` identity core, `IN` interest, `PS` position, `PF` preference, `EP` episode summary, `VM` visual memory ref, `PX` person/presence profile (Tier-P), `SA` source artefact (import) |
 | `tier` | yes | `C` or `P` (LDL-03) |
@@ -225,7 +226,7 @@ Rule for later agents: a package that depends on an LDL may start only after its
 | `created_at` (UTC) | yes | SECURITY "Zeitstrategie" |
 | `key_ref` | yes | which key/tier encrypted it (supports rotation) |
 | `iv`, `ciphertext`, `aad_version` | ciphertext | payload = JSON with semantic fields |
-| `content_hash` | yes | HMAC of plaintext under a separate key (dedup/integrity without revealing content). RECOMMENDATION; TO VERIFY that dedup is needed. |
+| `content_hash` | yes | keyed HMAC of the plaintext (dedup/integrity without revealing content). Tier-C: server HMAC key (separate from the data key). Tier-P: computed client-side with a client-derived key, or omitted — the server never sees Tier-P plaintext. RECOMMENDATION; TO VERIFY that dedup is needed. |
 
 The **payload (encrypted)** holds all semantic fields: text, epistemic label (P8), observation/interpretation/hypothesis/evaluation/decision/revision class (Lea VISION "Revidierbarkeit"), confidence (explicit, not pseudo-precise: PROCESSING/ROADMAP "keine erfundene Prozentgenauigkeit"), and source details.
 
@@ -529,7 +530,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - long-term memory: only via promotion.
 
 **Trust boundary:**
-- The client **cannot** send `system` role, memory context or history items with roles other than user/assistant. History is server-held (fixes AUD-25/OBS-02).
+- The client **cannot** send `system` role, memory context or history items with roles other than user/assistant. History is server-held (fixes OBS-02).
 - `client_turn_id` is used for idempotency (resend-safe).
 
 **Failure modes:**
@@ -537,7 +538,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - offline → queued in the client outbox, marked "nicht gesendet" (§34).
 
 **Invariants:**
-- I-TX-1: no test marker or debug instruction in production prompts (fixes AUD-26).
+- I-TX-1: no test marker or debug instruction in production prompts (fixes AUD-22).
 - I-TX-2: "Chat leeren" clears the local view only (ROADMAP) and never deletes memory.
 - I-TX-3: `max_tokens` and model come from config with a documented default.
 
@@ -1104,7 +1105,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 
 **Invariants:**
 - I-API-1: a route table in one file, default deny.
-- I-API-2: no route accepts `system` or `memory_context` from the client.
+- I-API-2: no route accepts `system` or `memory_context` from the client. **Sole exception (Tier-P, §3/§6.4):** `chat/turn` and `voice/session` may accept `attested_items[]` = `{record_uid, text}` for client-decrypted Tier-P records. The server checks that each `record_uid` exists, is Tier-P and belongs to the principal. It inserts the text only as clearly delimited *user-attested* data in the user role (never system), caps the size, and ignores the field in Incognito for writes.
 - I-API-3: error codes are stable and documented.
 
 **Verification:**
@@ -1331,7 +1332,8 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 ## 43. Device compatibility
 
 **Targets:**
-- current mobile Safari (iOS) and Chrome (Android);
+- phone, tablet and desktop layouts (responsive; AGENT_TASK domain "mobile/tablet/desktop");
+- current mobile Safari (iOS/iPadOS) and Chrome (Android);
 - desktop Chrome/Firefox/Safari/Edge (RECOMMENDATION).
 
 **Known constraints (TO VERIFY):**
@@ -1403,7 +1405,7 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 - replacing Lea's development with a static persona.
 
 **Forbidden shortcuts:**
-- F-1: client-supplied system prompts or memory context.
+- F-1: client-supplied system prompts or free-form memory context (the only allowed form is the ID-checked `attested_items[]`, §32 I-API-2).
 - F-2: plaintext semantic memory on the server (outside Tier-C ciphertext).
 - F-3: storing memory in Git as runtime.
 - F-4: "temporary" unauthenticated endpoints.
@@ -1476,3 +1478,85 @@ This implements PROCESSING Bausteine as runtime steps without exposing hidden re
 6. **Retirement (M6):** per domain, L decision.
 
 All provisional defaults are listed in §0.4 (LDL-01..18). None of them blocks M0.
+
+---
+
+## 50. Review log (completeness + adversarial) — performed in this run
+
+### 50.1 Completeness review (method: AGENT_TASK "At minimum cover" list, checked item by item → section)
+
+| AGENT_TASK domain | § |
+|---|---|
+| Principles; source-of-truth hierarchy | 1 |
+| Identity/continuity | 3 |
+| Migration/import | 7 |
+| Canonical memory | 4 |
+| Evidence/models/relations/predictions/revisions/history | 5 |
+| Provenance/conflict | 6 |
+| Dual-master/drift | 8 |
+| Orchestration | 9 |
+| Autonomy/permissions | 11 |
+| I/K/G/X/T/P mechanisms | 10 |
+| Text | 12 |
+| Voice | 13 |
+| Idle | 14 |
+| Vision/camera | 15 |
+| Visual memory | 16 |
+| Incognito | 20 |
+| Identity/presence/multi-person | 17 |
+| Relationships | 18 |
+| Appearance | 19 |
+| Tools/connectors | 21 |
+| External AI | 22 |
+| Working tool | 23 |
+| Sandbox separation | 24 |
+| Authn/authz/session | 25 |
+| Endpoint/abuse/cost/rate | 26 |
+| Secrets | 27 |
+| Privacy/encryption/recovery | 28 |
+| Logging without content/CoT | 29 |
+| Monitor/telemetry | 30 |
+| Data model boundaries | 31 |
+| API contracts | 32 |
+| Frontend IA | 33 |
+| PWA/offline | 34 |
+| Workers/queues | 35 |
+| Hosting/portability | 36 |
+| Git role | 37 |
+| Backup/DR | 38 |
+| Schema versioning | 39 |
+| Testing / security testing / regression | 40 |
+| Rollout/rollback | 41 |
+| Performance/cost | 42 |
+| Accessibility/devices | 33, 43 |
+| Degraded modes | 44 |
+| Retention/deletion | 45 |
+| Retirement criteria | 46 |
+| Non-goals/forbidden shortcuts | 47 |
+
+- **Result:** every domain is mapped.
+- **Gap found and fixed:** tablet was not named explicitly (§43 corrected).
+- **Card fields:** all major subsystem cards carry the status + L decision. Smaller sections (31–47) are policy sections rather than subsystems and state their invariants/status inline.
+
+### 50.2 Adversarial review (method: attack each design claim for contradictions, SPOFs, hidden dual masters, trust assumptions, recovery gaps, unverifiable packages — different from 50.1's checklist method)
+
+| # | Finding | Type | Correction |
+|---|---|---|---|
+| ADV-1 | Tier-P "user-attested context" (§3/§6.4) contradicted I-API-2/F-1 (no client memory context) | contradiction / trust assumption | Narrow ID-checked `attested_items[]` exception defined in §32 and F-1 |
+| ADV-2 | IC as a file (IM-I01) + IC in M3 (§3) = two IC homes | hidden dual master | Single cut-over transition note in §3; IM-M03 carries the migration |
+| ADV-3 | `content_hash` HMAC for Tier-P would need server-side plaintext | trust assumption | Tier-P hash is client-side or omitted (§4.1) |
+| ADV-4 | The server conversation buffer (IM-S03) would retain Incognito turns | contradiction with §20 | IMPLEMENTATION-MAP IM-C02 acceptance extended: no buffer retention for Incognito |
+| ADV-5 | A single Tier-C master key = SPOF for all Tier-C data | SPOF / recovery gap | Offline key backup is required (IM-M01), and the key restore is part of the restore drill (IM-M09 acceptance extended) |
+| ADV-6 | A client-side Tier-P key only on one device (iOS IndexedDB eviction) | recovery gap | Recovery code IM-M08 before V2→M3 migration IM-M06 (already sequenced); §43 note |
+| ADV-7 | A/ChatGPT continuing to save into the Lea repo after B takes over | hidden dual master | §8 path 1; IM-MG03 includes the separately authorised Lea workshop rule change |
+| ADV-8 | V1 writes continuing (work-state) | hidden dual master | IM-S04 (content) + IM-M07 (all V1 writes) |
+| ADV-9 | Governance packages (IM-I02, IM-MG03, IM-H01) are not testable by CI | unverifiable package | Each must produce a checklist artefact for C2 (IMPLEMENTATION-MAP §6) |
+| ADV-10 | Branch protection cannot be set by agents (API 403) | capability limit | IM-G01 has an explicit L step |
+| ADV-11 | UI-only enforcement risk for Incognito, autonomy and limits | trust boundary | Server-side invariants I-IN-1, I-AU-1, I-AB-1; negative tests required |
+| ADV-12 | "Independence" could be misread as provider independence | ambiguity | IM-X01 criterion 5; ROOT-CAUSE R-2 |
+| ADV-13 | Earlier AUD attributions: the test marker is AUD-22; AUD-25/26 are tests/identifiers | source accuracy | References corrected in §12 and IMPLEMENTATION-MAP |
+
+**Residual (not resolvable in design; carried to C2/L):**
+- hosting facts (IM-H00);
+- provider API features (TO VERIFY);
+- all LDL items (§0.4).
