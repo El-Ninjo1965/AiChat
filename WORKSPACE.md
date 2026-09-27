@@ -66,3 +66,14 @@ A future change requires L to receive the concrete problem, risk, proposed chang
 
 ### I-cycle work rule
 For nontrivial work decisions and after agent results, Lea visibly invokes I and autonomously selects the useful defined shortcut functions. If a check finds a new issue, another I-cycle is run as needed. PASS is reported only when the checks required for that decision complete without a new finding. An L approval gate, safety gate or external blocker ends as STOP/BLOCKED rather than being mislabeled PASS.
+
+
+### D4 — Legacy ß channel retired
+The existing persistent ß dialogue channel in El-Ninjo1965/Lea is retired for new work.
+
+- No new LEA↔CLAUDE turns are to be added there.
+- PR #1 is retained temporarily as historical evidence and is not deleted or merged by this decision.
+- AiChat is the sole authoritative LEA-WORK communication/workspace going forward.
+- The future meaning/transport of ß must point to the AiChat work architecture, but no Lea shortcut/protocol mutation is authorized by this decision alone.
+- Existing CHAT_PROTOCOL.md, WORK-CONTEXT.md and LEA_AGENT_CHAT.md in Lea remain untouched until a separately audited migration/archive plan is approved by L.
+- PR #1 may be closed only after migration/archive verification confirms that no required work evidence or active dependency would be lost.
