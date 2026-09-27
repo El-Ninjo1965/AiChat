@@ -130,3 +130,23 @@ Migration from A / El-Ninjo1965/Lea into B is experience-oriented, not file-orie
 - Sensitive migrated material must receive the appropriate protected-data treatment in B; migration relevance does not waive privacy/security controls.
 
 Target principle: preserve meaningful experience and development history, not the old file structure.
+
+
+### D8 — Owner and known-person model
+B starts with L as the authenticated owner/principal.
+
+- Other people may exist as distinct known persons in Lea's identity/presence/relationship model without requiring their own user account.
+- Lea may maintain appropriately scoped relationship context and experiences concerning known persons.
+- Presence must distinguish at least authenticated owner, declared known person/guest and unknown person; declaration is not equivalent to verified authentication.
+- A known/declarative person does not automatically gain access to L's protected personal data or owner-only capabilities.
+- Separate authenticated accounts/passkeys for additional people are a later optional extension when a concrete use case justifies the additional complexity.
+- The architecture must not equate "person known to Lea" with "authenticated application user".
+
+### D9 — Processing monitor during research/development
+During the active Lea research/development phase, the processing monitor is enabled/visible by default.
+
+- It may expose only genuinely instrumented processing/module events and content-free effect/status metadata.
+- It must not expose hidden chain-of-thought or simulate processing that did not occur.
+- Monitor visibility and telemetry persistence are separate controls.
+- The normal future everyday-use default may be reduced/hidden after the research phase without changing the underlying processing.
+- No raw telemetry retention duration is decided by this decision; the proposed 90-day value remains unapproved pending technical/privacy justification.
