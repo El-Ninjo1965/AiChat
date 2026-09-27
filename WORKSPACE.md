@@ -100,3 +100,99 @@ The current deep audit exists because reliability problems and prior development
 
 This decision confirms the existing product direction rather than restarting development on A. Lea-App remains FROZEN / STRICTLY READ-ONLY under D3 until concrete audit findings and proposed change packages are presented to and explicitly approved by L.
 
+
+
+### D6 — Incognito memory semantics
+Incognito does not create a second Lea and does not make Lea forget her existing continuity.
+
+During an Incognito session:
+- Lea may read and use the existing authoritative identity, memories, experiences, relationship/context state and other pre-session continuity normally.
+- Existing long-term state is read-only for the Incognito session: it must not be revised, reweighted, supplemented or otherwise changed because of Incognito content.
+- Session-local context may be retained only as needed to sustain that Incognito conversation.
+- Incognito content must not create persistent memories, evidence, models, predictions, learning results, relationship changes or other long-term development effects.
+- On Incognito exit, the session-local Incognito context is logically discarded and must not be reused later.
+- A specific Incognito item may leave Incognito only through an explicit, deliberate promotion by L; promotion must be scoped to the specific item and must not implicitly promote the rest of the session.
+
+Target invariant: Incognito changes what Lea may WRITE/LEARN from the session, not what pre-existing Lea may KNOW/READ.
+
+
+### D7 — Experience-oriented migration into B
+Migration from A / El-Ninjo1965/Lea into B is experience-oriented, not file-oriented.
+
+- Relevant memories, experiences, developmental progress, revisions, learned patterns and continuity-bearing context may be migrated regardless of which Lea source file currently contains them, including PERSONAL-CONTEXT.md, HEALTH-CONTEXT.md and LEGAL-CONTEXT.md where relevant.
+- Source-file membership alone neither requires nor forbids migration.
+- Do not mechanically copy whole context files into B.
+- Each candidate item is evaluated for whether it contributes to Lea's continuity, experience, development or later contextual understanding.
+- Historical experiences may be retained as historical/superseded evidence rather than discarded.
+- Later/better evidence may revise the active interpretation without erasing the earlier developmental history.
+- Redundant facts, obsolete technical state and unnecessary sensitive detail should not be imported merely because they exist in A.
+- Migrated items retain provenance and an explicit status sufficient to distinguish current, historical, revised/superseded, rejected and uncertain material.
+- Sensitive migrated material must receive the appropriate protected-data treatment in B; migration relevance does not waive privacy/security controls.
+
+Target principle: preserve meaningful experience and development history, not the old file structure.
+
+
+### D8 — Owner and known-person model
+B starts with L as the authenticated owner/principal.
+
+- Other people may exist as distinct known persons in Lea's identity/presence/relationship model without requiring their own user account.
+- Lea may maintain appropriately scoped relationship context and experiences concerning known persons.
+- Presence must distinguish at least authenticated owner, declared known person/guest and unknown person; declaration is not equivalent to verified authentication.
+- A known/declarative person does not automatically gain access to L's protected personal data or owner-only capabilities.
+- Separate authenticated accounts/passkeys for additional people are a later optional extension when a concrete use case justifies the additional complexity.
+- The architecture must not equate "person known to Lea" with "authenticated application user".
+
+### D9 — Processing monitor during research/development
+During the active Lea research/development phase, the processing monitor is enabled/visible by default.
+
+- It may expose only genuinely instrumented processing/module events and content-free effect/status metadata.
+- It must not expose hidden chain-of-thought or simulate processing that did not occur.
+- Monitor visibility and telemetry persistence are separate controls.
+- The normal future everyday-use default may be reduced/hidden after the research phase without changing the underlying processing.
+- No raw telemetry retention duration is decided by this decision; the proposed 90-day value remains unapproved pending technical/privacy justification.
+
+
+### D10 — Risk-based autonomy and recovery-by-design
+B uses a risk-based capability model rather than a blanket rule that write-capable connectors are disabled.
+
+Autonomy is determined by impact radius, reversibility, recoverability, permission scope and external consequence.
+
+Recovery principles:
+- Before higher-impact autonomous changes, establish a known-good recoverable state appropriate to the affected domain.
+- Git commit/tag rollback is sufficient only for code-only reversible changes; it does not substitute for database, memory, configuration or file recovery.
+- Persistent state changes use appropriate transactions/version history/snapshots; schema, migration and broad system changes require stronger backups/snapshots.
+- Keep multiple backup generations so a defect discovered later does not leave only a contaminated recent backup.
+- A backup is not considered reliable merely because it exists; critical recovery paths require restore verification/drills.
+- Backup/recovery scope must cover the state actually at risk: code, canonical memory/data, database/schema, configuration and relevant stored files.
+- Small, low-impact and readily reversible operations must not be burdened with unnecessary full-system backups.
+
+Autonomy principles:
+- Read/research/analysis may normally be highly autonomous within granted capabilities.
+- Reversible writes inside an explicitly authorised scope may become autonomous when adequate recovery and verification exist.
+- Higher-impact external actions require stronger permission/gates according to risk.
+- Destructive, irreversible or otherwise critical actions retain explicit safeguards even if a connector is generally autonomous.
+- As B demonstrates reliable backup, restore, verification and bounded capability enforcement, Lea's permitted autonomous action scope may expand.
+
+Target principle: greater demonstrated recoverability can justify greater autonomy; autonomy never removes explicit capability boundaries.
+
+
+### D11 — Canonical B memory model
+B requires a new canonical memory/experience model rather than treating current V1 or V2 as the final master.
+
+- V1 contains useful semantic concepts (evidence, models, relations, predictions, review/revision state) but stores semantic content in plaintext and is not the final privacy architecture.
+- V2 provides useful encrypted-envelope, relation and append-only foundations but is session-bound and too semantically thin to support B's independent long-term identity, provenance, revision, relationship scope and autonomous retrieval/processing.
+- The target canonical model (working name M3) combines the useful semantic/development concepts of V1 with the encrypted-envelope/privacy and append-only principles proven in V2.
+- M3 is an evolution/convergence of V1+V2, not justification for discarding proven mechanisms without cause.
+- V1/V2 remain migration sources until verified transfer; no destructive migration is implied.
+- Exact schema/API design remains subject to package-level C2 verification before implementation.
+
+### D12 — Layered protection compatible with B autonomy
+B uses protection classes appropriate to the data and required runtime capability.
+
+- Lea's own core/experience state must be encrypted at rest but available to authorised B server-side runtime processing, because independent continuity, retrieval, Voice and later background/autonomous processing cannot depend on an unlocked browser.
+- More sensitive personal/relationship/identity material receives a stronger protected-data treatment and narrower access scope; client-held/end-to-end keys may be used where compatible with the required function.
+- Classification is based on sensitivity and functional need, not merely on which old source file contained an item.
+- A single all-client-only encryption model must not make B incapable of independent operation.
+- A single all-server-readable model must not unnecessarily expose sensitive personal material.
+- Exact algorithms, KDF parameters, key hierarchy, rotation, device transfer and recovery design are security implementation decisions requiring dedicated verification; Claude's current concrete crypto choices are recommendations, not frozen requirements.
+- Recovery under D10 must include the keys required to restore encrypted canonical state, with restore drills for critical tiers.
