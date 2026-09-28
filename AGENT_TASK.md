@@ -1,61 +1,110 @@
-# AGENT_TASK — AiChat C2 Artifact Consolidation
+# AGENT_TASK — IM-T01 Behavioural/API Test Harness
 
-TASK_VERSION: 5
+TASK_VERSION: 6
 STATUS: READY
-MODE: MECHANICAL CONSOLIDATION
-WORKSPACE: El-Ninjo1965/AiChat
+MODE: IMPLEMENTATION PACKAGE DESIGN/EXECUTION
+TARGET_REPO: El-Ninjo1965/Lea-App
+PACKAGE: IM-T01
+
+## Authority
+Read current AiChat main first:
+- WORKSPACE.md (D1-D16)
+- IMPLEMENTATION-MAP.md, package IM-T01
+- B-BLUEPRINT.md relevant testing/security/API sections
+- AUDIT-FINDINGS.md relevant AUD-22/23/24/25 and OBS references
+
+Then work directly in Lea-App from current main. Expected baseline at task preparation:
+d6c23c646432272371f5a4175b155d894a70b2e4
+If main has moved, re-read the diff and stop if it changes IM-T01 assumptions.
+
+Lea repository is read-only context only if needed.
 
 ## Goal
-Put the independently reviewed C2 audit/architecture artifacts onto AiChat main without merging the historical copilot/main branch history.
+Implement IM-T01: a behavioural/API test harness that exercises the existing PHP endpoints against an isolated test database/provider mock and documents current behaviour before security fixes.
 
-## Authoritative source commit
-Use exact file contents from commit/ref:
-83be5a1
+This package must make later IM-S01..S04 changes safely testable. It must not fix those defects now.
 
-Expected source blob SHAs:
-- AUDIT-FINDINGS.md = 1aeb9f5309dd28d9f52cf1c9d5422c07b6b1fedb
-- AUDIT-LOG.md = d47fdaf58820336ad484bd42ea5b88b31a217b84
-- ROOT-CAUSE.md = 51d2d4153f26b3ffde479600f293b6cd57813d41
-- B-BLUEPRINT.md = 6ce7064178e72ff288c561da7f24de38379ade8a
-- IMPLEMENTATION-MAP.md = bfa252eae1ff98e7bd6d1753d9dca907d0620cdf
+## Required preflight
+1. Read Lea-App AGENTS.md and applicable repo rules.
+2. Inventory current routes from .htaccess and current tests.
+3. Determine PHP version/requirements available in CI without changing production.
+4. Inspect migrations 001/002 and endpoint configuration dependencies.
+5. Confirm how to provide an isolated MySQL/MariaDB CI service and a local provider mock.
+6. Confirm current CI from IM-G01 is green.
+7. Identify exact path scope needed before writing; keep it minimal.
 
-## Required action
-Create exactly those five files on a fresh working branch based on current AiChat main, byte-for-byte/content-identical to the source ref.
+## Scope
+Expected/allowed categories:
+- tests/php/** (new)
+- tests/fixtures/** (new if needed)
+- test-only provider mock/stub files under tests/**
+- .github/workflows/ci.yml only as required to run the harness
+- minimal testability/config hook in api/text/chat.php and/or api/realtime/session.php or a shared helper ONLY if the current code has no safe provider-base override for tests
 
-Do NOT merge copilot/main history.
+Any production-code hook must:
+- change no normal production behaviour;
+- default to the current production provider URL/behaviour;
+- be server-side;
+- not expose secrets;
+- be justified in the result.
 
-Do NOT reinterpret, edit, clean up, reformat or update the artifact contents in this task.
-
-## Preconditions
-Before writing:
-1. fetch current main;
-2. verify WORKSPACE.md and this AGENT_TASK.md are current;
-3. verify all five source files at 83be5a1 match the expected blob SHAs above;
-4. verify none of the five target paths already exists on current main. If any exists, STOP and report rather than overwrite.
-
-## Allowed writes
-Only:
-- AUDIT-FINDINGS.md
-- AUDIT-LOG.md
-- ROOT-CAUSE.md
-- B-BLUEPRINT.md
-- IMPLEMENTATION-MAP.md
-
-No other file may change.
+Do not broaden into frontend/UI work.
 
 ## Forbidden
-- no Lea write;
-- no Lea-App write;
-- no deployment;
-- no GitHub settings change;
-- no branch protection change;
-- no content edits;
-- no merge of the historical branch.
+- no fix for AUD-22/23/24/25 in this package;
+- no authentication behaviour change;
+- no prompt/persona change;
+- no memory schema redesign;
+- no M3;
+- no D13 UI implementation;
+- no Voice reconnect D14 implementation;
+- no deployment/production mutation;
+- no production secrets/data.
 
-## Verification
-After writing:
-1. verify the five resulting blob SHAs equal the expected SHAs;
-2. verify diff against the starting main contains exactly five added files and no modifications/deletions;
-3. report branch, commit SHA, exact files and verification result.
+## Required behaviour coverage
+At minimum:
+- route inventory derived from .htaccess, with an explicit classification of tested/public/non-public where determinable;
+- at least one HTTP behavioural test for each existing application/API route that can be safely exercised in the isolated harness;
+- chat provider mock records whether/what provider call occurred;
+- realtime provider mock records whether/what provider call occurred;
+- isolated DB is initialized from migrations 001 and 002 where applicable;
+- current known defects are represented as explicit expected-current-behaviour / expected-fail evidence linked to the relevant AUD/OBS IDs rather than silently fixed;
+- tests fail clearly if a route is added but omitted from the harness inventory.
 
-This is consolidation only, not implementation and not a project PASS.
+## CI
+Extend existing IM-G01 CI rather than replacing its protections.
+Preserve:
+- existing Node tests;
+- Secret scan;
+- Scope check;
+- no deployment.
+
+The PHP/API harness must run in CI using isolated test resources only.
+
+## Existing test open-handle issue
+IM-G01 documented that tests/memory-v2-client.test.js leaves an open handle and CI currently uses --test-force-exit. Do not silently hide or expand this issue. IM-T01 may leave the existing workaround in place; fixing the root cause requires a separate package unless the cause is inside the exact new harness scope and the fix is trivial/non-behavioural.
+
+## D13-D16
+These decisions were recorded after IM-G01. They are NOT implementation scope for IM-T01. Avoid touching frontend layout, shortcut UI, learning modes, multimodal perception or Voice continuity.
+
+## Completion
+Before finishing:
+1. run existing Node tests;
+2. run new harness locally in the agent environment;
+3. run route-inventory test;
+4. run secret scan if available;
+5. inspect git diff/status and prove scope;
+6. commit/push only to the assigned Lea-App agent branch;
+7. do not merge and do not deploy.
+
+Report:
+- branch and commit SHA;
+- exact changed files;
+- route inventory and coverage;
+- test results;
+- any expected-fail/current-defect markers;
+- any production-code test hook and why it is behaviour-neutral;
+- blockers/unknowns;
+- whether the package is ready for independent C2.
+
+No project PASS claim.
