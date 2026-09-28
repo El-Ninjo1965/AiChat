@@ -117,28 +117,18 @@ IM-X01 + IM-M09 (recent) ──> IM-X02 Retirement Gate (per domain)
 
 ---
 
-## 3. Freeze / unfreeze protocol (applies to every Lea-App package)
+## 3. Active-development package scope protocol
 
-- **FACT:** Lea-App is FROZEN / STRICTLY READ-ONLY (WORKSPACE, AGENT_TASK).
-- **Rule U-1:** a package may open Lea-App only through an **unfreeze record** written by L (or on L's instruction) in AiChat before the run. The record contains:
-  - package ID;
-  - allowed paths (glob list);
-  - allowed operations (code / migration / deploy-to-staging / deploy-to-prod);
-  - time window;
-  - the responsible agent;
-  - the base SHA.
-- **Rule U-2:** the unfreeze scope is the package's "Likely files" list, never the whole repository (forbidden shortcut F-7).
-  - CI enforces it via a path-scope check once IM-G01/IM-G03 exist: the PR diff must be a subset of the allowed globs.
-- **Rule U-3:** after merge, a **re-freeze record** is written with:
-  - the merged SHA;
-  - CI run reference;
-  - C2 verdict reference;
-  - deploy reference (if any);
-  - a confirmation that no other paths changed (`git diff --stat base..merged`).
-- **Rule U-4:** two packages may be unfrozen concurrently only if their allowed path sets are disjoint (see the parallelism table, §5).
-- **Rule U-5:** a production deploy is always its own R3 step (blueprint §11): L approval + C2, never implied by a code merge.
+Lea-App is in **ACTIVE DEVELOPMENT** (WORKSPACE D18; FREEZE-LOG development-state transition 2026-09-27). The former routine freeze/unfreeze cycle is retired.
 
----
+- Every implementation change still belongs to a named package with explicit scope, prerequisites, tests and recovery/rollback.
+- CI scope enforcement must reflect the currently authorised package scope without requiring a new global freeze/unfreeze ceremony.
+- Package-sized commits/branches/checkpoints remain mandatory for rollbackability.
+- Independent packages may run in parallel under D17.
+- Existing L decisions are reused under D18; manual acceptance tests do not prevent prior implementation unless the package explicitly requires an unresolved design decision.
+- Production/deployment, destructive migration/cutover/retirement, external infrastructure mutation and other true R3 actions retain their explicit L/recovery gates.
+- C2 remains an independent acceptance/review gate and may be prepared/run in parallel; the implementer does not self-award C2.
+- FREEZE-LOG remains historical evidence for the former freeze period and the transition to ACTIVE DEVELOPMENT; its old unfreeze template is not the current per-package operating procedure.
 
 ## 4. Work packages
 
