@@ -191,15 +191,16 @@ Lea-App is in **ACTIVE DEVELOPMENT** (WORKSPACE D18; FREEZE-LOG development-stat
 - **Manual L test:** none.
 - **Rollback:** revert the test dirs. **Risk:** medium (the CI environment). **Agent:** A2. **Gates:** C2.
 
-#### IM-H00 — Hosting capability register (facts)
+#### IM-H00 — Hosting capability register (facts) — SUBSTANTIALLY COMPLETE 2026-09-28
 - **Objective:** Fill the blueprint §36 register with FACTs (PHP version, cron, files outside the web root, DB grants, staging subdomain, backups).
-- **Prerequisites:** L provides read access or answers (no agent access to the hoster; FACT).
+- **Prerequisites:** satisfied for the core questionnaire by L-provided cPanel evidence/answers; remaining narrow unknowns are recorded in `HOSTING-CAPABILITIES.md` and are verified only where a consuming package needs them.
 - **Scope:** documentation in AiChat.
-- **Likely files:** `AiChat/HOSTING-CAPABILITIES.md` (new), or a section in the registry.
-- **Forbidden scope:** any hosting change; recording credentials, hostnames or paths (P-rule: no infrastructure identifiers).
-- **Acceptance:** every register row has FACT or "unknown" + the method of check.
-- **Automated tests:** none. **Manual L test:** L answers the checklist.
-- **Rollback:** n/a. **Risk:** low. **Agent:** A1. **Gates:** L.
+- **Authoritative fact register:** `HOSTING-CAPABILITIES.md`.
+- **Forbidden scope:** any hosting change; recording credentials, hostnames or unnecessary infrastructure identifiers/paths (P-rule).
+- **Acceptance:** core register rows have FACT/DECIDED TARGET or explicit UNKNOWN + method/consumer for later verification. Current confirmed capabilities include PHP 8.5, one-minute cron, protected storage outside the public web root, full DB privileges for the Lea-App database, and cPanel/JetBackup restore/download capability. Actual proxy/CDN presence, exact production DB version and staging capability remain explicit UNKNOWNs rather than assumptions.
+- **Security consequence:** until a trusted proxy is technically proven/configured, IM-S02 must fail closed and not trust client-supplied forwarding headers; L's desired architecture is direct end-device → Internet/HTTPS → cPanel-hosted Lea-App.
+- **Automated tests:** none. **Manual L test:** core checklist completed 2026-09-28; package-specific UNKNOWNs are verified by their consuming package.
+- **Rollback:** n/a. **Risk:** low. **Agent:** A1. **Gates:** no remaining global L gate for the core IM-H00 questionnaire.
 
 #### IM-E01 — Staging environment
 - **Objective:** A separate staging instance with its own DB, keys and provider key (blueprint §24, I-SB-1..3).
@@ -790,7 +791,7 @@ The authoritative register is `B-BLUEPRINT.md` §0.4.
 
 - No package has been implemented or tested.
 - All "Likely files" are based on Lea-App `450ff9d` and must be re-verified.
-- Hosting facts are TO VERIFY (IM-H00).
+- IM-H00 core hosting facts are recorded in `HOSTING-CAPABILITIES.md`; only the explicitly listed package-specific unknowns remain TO VERIFY.
 - Provider API features are TO VERIFY at implementation time.
 - No PASS is claimed for any part of the project.
 
