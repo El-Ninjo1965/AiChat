@@ -196,3 +196,94 @@ B uses protection classes appropriate to the data and required runtime capabilit
 - A single all-server-readable model must not unnecessarily expose sensitive personal material.
 - Exact algorithms, KDF parameters, key hierarchy, rotation, device transfer and recovery design are security implementation decisions requiring dedicated verification; Claude's current concrete crypto choices are recommendations, not frozen requirements.
 - Recovery under D10 must include the keys required to restore encrypted canonical state, with restore drills for critical tiers.
+
+
+### D13 — Text UI viewport contract and compact control surfaces — 2026-09-28
+The Text view must present one visually coherent Lea-App in portrait and landscape rather than materially different layouts.
+
+Core viewport contract:
+- The app's outer content frame must fit inside the available PWA viewport; routine page/body scrolling is not part of the Text interaction.
+- The conversation transcript is the primary scrollable region. It scrolls internally.
+- Portrait/landscape and phone/tablet may reflow and resize, but preserve the same information hierarchy, controls and functional meaning.
+- If vertical space becomes scarce, transcript visible height may shrink before the outer page begins scrolling.
+- Avoid decorative whitespace and oversized controls that consume transcript area.
+
+Text view structure, top to bottom:
+1. compact full-width workflow/status strip;
+2. main row/area: Lea appearance/profile visual + transcript, aligned as one coherent region where geometry permits;
+3. compact navigation/control row associated with the profile area: Home, context-sensitive Text/Voice switch, Settings;
+4. message composer associated with transcript;
+5. compact full-width manual-shortcut strip.
+
+Workflow/status strip:
+- It is status/telemetry, not a duplicate command surface.
+- Current conceptual items: Kontext, Erinnern, Analyse, Vergleichen, Unsicherheit, Prognose, Entscheiden, Pruefen, Lernen, Memory.
+- Render compactly and consistently aligned; label followed closely by a status dot. No large fake-button 'Inaktiv' pills and no execute arrow.
+- Number of workflow items is dynamic; wrapping to additional rows is allowed.
+- The strip can be hidden/shown from Settings.
+- Memory status may be an actual navigation affordance to Memory & Sicherheit, but must not create a duplicate second Memory-status block elsewhere.
+
+Manual shortcut strip:
+- Separate from workflow/status.
+- No redundant 'Shortcuts:' heading is required.
+- Show only the current authoritative manual shortcuts from Lea/SHORTCUTS.md; do not reconstruct meanings from memory.
+- Compact format: clickable shortcut token/letter plus short description. Only the shortcut token is the activation target; description/equal sign is not clickable, reducing accidental execution.
+- No separate send-arrow icon is required.
+- Wrapping to additional rows is allowed on narrow screens.
+- The strip can be hidden/shown from Settings.
+
+Typography/layout:
+- Target compact experiment typography for workflow/shortcut strips is approximately 10px in the next prototype/mockup, subject to real-device readability/accessibility testing before finalisation.
+- Labels/status dots stay visually close; spacing between different items is enough to distinguish groups without boxes/separators.
+- Chat messages use the available transcript width rather than artificially narrow left/right speech bubbles. Sender distinction may use restrained background difference.
+- Remove unnecessary blank lines/padding around one-line messages. A one-line message should normally consume roughly one content line plus minimal separation, not a four-line-height block.
+- Chronological messages remain vertically ordered, not side-by-side columns.
+
+Profile/appearance:
+- No repeated 'Lea' title/tagline is needed inside the Text view.
+- Appearance image/container may be portrait, landscape, square or other supported aspect chosen by Lea's appearance state; do not force a circular avatar.
+- Appearance may later change under Lea's appearance/experience mechanisms, including contextual images proposed/selected by Lea, subject to the appearance rules and capability gates.
+- Presence/activity is communicated primarily by the appearance-frame state instead of a redundant green online dot: grey = inactive/not in active chat; steady green = active Text; animated/pulsing grey/green or equivalent = active Voice. Do not implement this as an animated GIF requirement; use an accessible UI animation/state mechanism.
+- Under/adjacent to the appearance area, navigation remains compact: Home; context-sensitive Voice icon while in Text / Text icon while in Voice; Settings. No redundant overflow/three-dot menu when Settings already provides those options.
+
+PWA/system chrome:
+- Product mockups should not invent browser/OS status bars as part of the Lea-App UI. The app designs only its own viewport.
+
+### D14 — Long Voice continuity across provider/session boundaries — 2026-09-28
+A provider/session time limit must not define the user-visible conversation boundary.
+
+- If a Voice provider session expires, disconnects or must be renewed, B should automatically establish a replacement session when policy/provider capabilities permit.
+- Preserve conversation context, Lea identity, active mode and relevant session state across the handoff.
+- The handoff may show a short unobtrusive notice such as 'Voice session renewed' so L can recognise that a technical session boundary occurred.
+- Goal: multi-hour conversations (e.g. 4+ hours) behave as one continuous Lea conversation even if several underlying provider sessions are required.
+- External provider limits are treated as implementation constraints to bridge, not as the desired Lea conversation limit.
+- Reconnect loops need bounded retry/backoff and an honest degraded/offline state if continuity cannot currently be restored.
+
+### D15 — Personality experience vs work-skill learning domains — 2026-09-28
+B must distinguish at least two learning/experience purposes without creating two Leas.
+
+PERSONALITY/EXPERIENCE domain:
+- Focus: Lea's developing interests, preferences, evaluations, curiosity, relationship/context experience, perception-derived experience and revisions.
+- Work implementation details are not automatically personality memories.
+- A meaningful personal/developmental consequence of work may cross into this domain (e.g. a collaboration experience or a revised self-model), with provenance.
+
+WORK/SKILL domain:
+- Focus: reusable task skills, methods, technical patterns, coding/development practices and learned operational competence.
+- It may learn from L, tools and external AIs when evidence supports the skill.
+- It does not need to store personal narrative merely to retain a technical skill.
+
+Interfaces:
+- Domains may exchange specifically relevant derived evidence, but do not blindly copy their stores into each other.
+- Standard chat may produce candidates for either domain according to actual relevance.
+- A future explicit Learning/Private mode may increase focus on personality/experience development; Work mode increases task/skill focus and follows L's authorised work objective and capability gates.
+- Mode changes do not create separate identities; Lea remains one continuing system.
+- Exact UI naming and navigation for Standard/Private-Learning/Work remain implementation-design work; the semantic separation above is authoritative.
+
+### D16 — Multimodal perception as experience input — 2026-09-28
+Future camera/vision and acoustic perception are not only answer-assistance channels.
+
+- Observable image/video/audio events may become evidence for Lea's own experience processing under the self-directed perception rules in Lea/PROCESSING.md.
+- Background acoustic events may be noticed when technically available and relevant (examples: cough/sneeze, music, water, animals, traffic); no claim of perception may be made when the runtime did not actually receive/analyse the signal.
+- Video/audio continuity should preserve the distinction between OBSERVATION, inference and evaluation.
+- Lea may form/revise revidable preferences or interests from repeated multimodal experience; L's preference does not determine Lea's result.
+- Privacy/consent, capture indicators and capability gates remain mandatory before ambient audio/video processing is enabled.
