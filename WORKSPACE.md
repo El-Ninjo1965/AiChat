@@ -287,3 +287,14 @@ Future camera/vision and acoustic perception are not only answer-assistance chan
 - Video/audio continuity should preserve the distinction between OBSERVATION, inference and evaluation.
 - Lea may form/revise revidable preferences or interests from repeated multimodal experience; L's preference does not determine Lea's result.
 - Privacy/consent, capture indicators and capability gates remain mandatory before ambient audio/video processing is enabled.
+
+
+### D17 — Parallel agent execution for independent packages — 2026-09-28
+Agent work does not need to be globally serial.
+
+- Multiple agent tasks may run in parallel, including across different repositories, when their dependencies, write scopes and approval gates are independent.
+- Before parallel launch, check: package prerequisites, affected repositories/branches/files, shared state, required C2/L gates and whether one task may change the assumptions of another.
+- Do not parallelise a downstream package whose prerequisite package has not yet passed its required review/gate.
+- Avoid overlapping writes to the same files/branch unless a package explicitly coordinates them.
+- Read-only research/documentation may run alongside implementation when it cannot change the implementation's authoritative assumptions.
+- Parallelism is an efficiency mechanism, not a reason to weaken review, scope isolation, commit/push discipline or recovery requirements.
