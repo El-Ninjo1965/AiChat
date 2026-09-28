@@ -298,3 +298,17 @@ Agent work does not need to be globally serial.
 - Avoid overlapping writes to the same files/branch unless a package explicitly coordinates them.
 - Read-only research/documentation may run alongside implementation when it cannot change the implementation's authoritative assumptions.
 - Parallelism is an efficiency mechanism, not a reason to weaken review, scope isolation, commit/push discipline or recovery requirements.
+
+
+### D18 — Gate preflight and autonomous implementation progression — 2026-09-28
+Development gates distinguish permission to implement from evidence required for acceptance/deployment.
+
+- Before a long autonomous implementation run, perform a gate preflight across the planned dependency graph.
+- A manual L acceptance test named for a package is normally an acceptance/gate condition, not a reason to prevent implementation and automated testing from being completed first.
+- Packages may be implemented, tested, committed and pushed up to (but not through) an unresolved external/R3 action when their prerequisites are otherwise satisfied.
+- C2 remains independent review. The implementer may run exhaustive self-tests, but does not self-award independent C2. C2 review should be prepared/run in parallel where dependencies allow; only a failed/unresolved C2 blocks the dependent acceptance/merge/progression.
+- Existing recorded L decisions/approvals are reused; do not repeatedly ask L to reconfirm a settled decision merely because another package references it.
+- True stop gates remain true stop gates: production/deployment actions; external infrastructure mutations requiring L; key/offline-recovery actions only L can perform; migration/cutover of authoritative or real data; destructive deletion/retirement; and genuinely OPEN L decisions that materially determine implementation.
+- For an unresolved true gate, autonomous work should complete every safe prerequisite and prepare the exact decision/test/action needed, then stop at the narrowest possible boundary.
+- Autonomous implementation follows IMPLEMENTATION-MAP dependencies, uses package-sized commits/branches/checkpoints, runs required tests, fixes its own ordinary implementation defects, and may parallelise independent packages under D17.
+- A large autonomous run must remain rollbackable; 'autopilot' never means one monolithic commit or bypassing scope, CI, C2, recovery or authority boundaries.
