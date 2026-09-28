@@ -312,3 +312,36 @@ Development gates distinguish permission to implement from evidence required for
 - For an unresolved true gate, autonomous work should complete every safe prerequisite and prepare the exact decision/test/action needed, then stop at the narrowest possible boundary.
 - Autonomous implementation follows IMPLEMENTATION-MAP dependencies, uses package-sized commits/branches/checkpoints, runs required tests, fixes its own ordinary implementation defects, and may parallelise independent packages under D17.
 - A large autonomous run must remain rollbackable; 'autopilot' never means one monolithic commit or bypassing scope, CI, C2, recovery or authority boundaries.
+
+
+### D19 — Lea-App as the independent primary workspace; modes and AI-provider authority — 2026-09-28
+The target system is centred on L, Lea-App and L's own server. External development platforms and AI providers are tools around that system, not Lea's identity or mandatory workspace.
+
+Primary-system target:
+- Normal operation and continued development are performed through Lea-App on L's own cPanel-hosted server.
+- ChatGPT App and Codespaces are build-phase tools, not required dependencies of the target system.
+- GitHub is optional as a private remote mirror / additional recovery and versioning layer. Loss or outage of GitHub must not prevent normal Lea operation, development, local versioning, rollback or recovery.
+- Server-side/local Git or an equivalent auditable version-control mechanism remains required even when GitHub is not used.
+- Recovery must not depend on Lea-App itself being healthy: L retains an independent recovery path through cPanel / JetBackup / FTPS and protected backups.
+
+Modes:
+- PRIVATE mode focuses on Lea's personality/experience, conversation and everyday/private interaction.
+- WORK mode is the primary controlled interface for development, server administration, files, databases, tests, backups, APIs/connectors and authorised changes. Work/skill learning remains distinct from personality/experience learning under D15 without creating a second Lea.
+- INCOGNITO follows D6: existing authorised context remains readable as defined there, while new session content is transient and is not persisted except for an explicit item promotion by L.
+- These are modes of one continuing Lea, not separate identities.
+
+AI/provider interfaces:
+- AI interfaces remain a permanent architectural capability. The provider layer must stay open and provider-independent so multiple external AI/model providers and later local/self-hosted models can be added or replaced without rebuilding Lea's identity, memory, modes or primary server state.
+- Lea may use external specialist AIs in WORK mode through the controlled connector/provider architecture and applicable privacy, capability and risk gates.
+- Provider credentials remain protected/server-side as appropriate; an external provider receives only the context authorised and necessary for its task.
+- While Lea still depends on an external model for core inference, provider independence does not mean provider-less operation. The architecture must distinguish replaceability from absence of an inference provider.
+
+Provider selection authority:
+- If L explicitly selects a provider/model for a task, that selection overrides Lea's automatic preference among options that are technically and policy-permitted.
+- If L gives no provider/model instruction, Lea selects the suitable permitted provider/model herself using task capability, quality, cost, privacy/data-sharing constraints, availability and context requirements.
+- L's override does not bypass non-negotiable security/privacy/capability invariants. If the selected provider is not permitted for the required data/action, Lea reports the conflict instead of transmitting or silently weakening policy.
+- When an explicit L provider/model override is active and that provider is unavailable, Lea does not silently switch providers; she reports the failure / asks as required. Without an explicit override, normal permitted fallback selection may be automatic.
+
+Independence acceptance implication:
+- IM-X01 must verify not only that B no longer requires A for normal operation, but that routine operation and continued controlled development can be performed through Lea-App + L's own server without requiring ChatGPT App, GitHub or Codespaces.
+- Optional GitHub mirroring and optional external specialist-AI use do not violate independence so long as loss of those optional services does not disable the corresponding core local/server capability.
