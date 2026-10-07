@@ -12,12 +12,16 @@ function db(){
   ]);
 }
 $pdo=db();$method=$_SERVER['REQUEST_METHOD'];$action=$_GET['action']??'';
+if($method==='GET'&&$action==='list'){
+  $q=$pdo->query("SELECT game_code,host_name,dice_mode,player_count,created_at,updated_at FROM dice_games WHERE status='active' AND updated_at >= (NOW() - INTERVAL 12 HOUR) ORDER BY updated_at DESC LIMIT 30");
+  out(['ok'=>true,'games'=>$q->fetchAll()]);
+}
 if($method==='POST'&&$action==='create'){
   $b=body();$c='';
   do{$c=strtoupper(substr(bin2hex(random_bytes(4)),0,6));$q=$pdo->prepare('SELECT 1 FROM dice_games WHERE game_code=?');$q->execute([$c]);}while($q->fetch());
-  $state=$b['state']??[];$mode=in_array(($b['dice_mode']??''),['real','digital'],true)?$b['dice_mode']:'real';
-  $q=$pdo->prepare('INSERT INTO dice_games(game_code,state_json,dice_mode,version,updated_at) VALUES(?,?,?,1,NOW())');
-  $q->execute([$c,json_encode($state,JSON_UNESCAPED_UNICODE),$mode]);out(['ok'=>true,'code'=>$c,'version'=>1]);
+  $state=$b['state']??[];$mode=in_array(($b['dice_mode']??''),['real','digital'],true)?$b['dice_mode']:'real';$host=substr(trim((string)($b['host_name']??'')),0,100);$pc=max(2,min(6,(int)($b['player_count']??2)));
+  $q=$pdo->prepare('INSERT INTO dice_games(game_code,host_name,state_json,dice_mode,player_count,status,version,updated_at) VALUES(?,?,?,?,?,\'active\',1,NOW())');
+  $q->execute([$c,$host,json_encode($state,JSON_UNESCAPED_UNICODE),$mode,$pc]);out(['ok'=>true,'code'=>$c,'version'=>1]);
 }
 $c=code();if(!$c)out(['ok'=>false,'error'=>'missing_code'],400);
 if($method==='GET'){
