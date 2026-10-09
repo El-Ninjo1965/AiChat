@@ -1,0 +1,8 @@
+api/config.php
+.env
+*.sql.bak
+__pycache__/
+test.php
+.htaccess
+.user.ini
+php.ini
