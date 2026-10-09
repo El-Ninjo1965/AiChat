@@ -1,5 +1,9 @@
-# Kniffel PWA
+# AiChat
 
-Small offline scorecard for 2–6 players. English/Thai UI with automatic first-run language detection, manual language selection, automatic totals/upper bonus, local autosave and local high-score list.
+Experimentier- und Test-Repository für Entwicklungsversuche.
 
-Open `index.html` through HTTPS/static hosting. PWA service workers require HTTPS (localhost is also allowed).
+## Games
+
+Unter `Games/` werden Spiel-Prototypen und Entwicklungskopien abgelegt. Als nächster Schritt wird dort eine vollständige Kopie des aktuellen Dice Games aus `El-Ninjo1965/Neutral` unter `Games/Dice-Game/` eingerichtet.
+
+Das produktive Dice Game in `El-Ninjo1965/Neutral` bleibt davon unberührt.
