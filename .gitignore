@@ -1,3 +1,10 @@
-api/config.php
+# Local secrets and environment files
 .env
+.env.*
+**/api/config.php
+
+# Local database / backup artifacts
 *.sql.bak
+
+# OS / editor noise
+.DS_Store
