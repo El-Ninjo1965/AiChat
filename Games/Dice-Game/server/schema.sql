@@ -1,0 +1,67 @@
+CREATE TABLE IF NOT EXISTS dice_games (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  game_code VARCHAR(8) NOT NULL UNIQUE,
+  state_json JSON NOT NULL,
+  dice_mode ENUM('real','digital') NOT NULL DEFAULT 'real',
+  version INT UNSIGNED NOT NULL DEFAULT 1,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX(updated_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+ALTER TABLE dice_games ADD COLUMN IF NOT EXISTS host_name VARCHAR(100) NOT NULL DEFAULT '' AFTER game_code;
+ALTER TABLE dice_games ADD COLUMN IF NOT EXISTS player_count TINYINT UNSIGNED NOT NULL DEFAULT 2 AFTER dice_mode;
+ALTER TABLE dice_games ADD COLUMN IF NOT EXISTS status ENUM('active','finished') NOT NULL DEFAULT 'active' AFTER player_count;
+
+CREATE TABLE IF NOT EXISTS dice_users (
+  id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(40) NOT NULL UNIQUE,
+  password_hash VARCHAR(255) NOT NULL,
+  role ENUM('admin','user') NOT NULL DEFAULT 'user',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS dice_auth_tokens (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id INT UNSIGNED NOT NULL,
+  token_hash CHAR(64) NOT NULL UNIQUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_used_at TIMESTAMP NULL DEFAULT NULL,
+  expires_at DATETIME NULL DEFAULT NULL,
+  INDEX(user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS dice_rate_limits (
+  rate_key VARCHAR(100) PRIMARY KEY,
+  attempts INT UNSIGNED NOT NULL DEFAULT 0,
+  window_start TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS dice_results (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  played_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  players JSON NOT NULL,
+  winner VARCHAR(100) NOT NULL,
+  winning_score INT NOT NULL,
+  mode ENUM('real','digital') NOT NULL DEFAULT 'real',
+  INDEX(played_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Presence (heartbeat, short TTL) and invitations. api/game.php also creates both on demand.
+CREATE TABLE IF NOT EXISTS dice_presence (
+  user_id INT UNSIGNED PRIMARY KEY,
+  last_seen TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX(last_seen)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS dice_invites (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  game_code VARCHAR(8) NOT NULL,
+  user_id INT UNSIGNED NOT NULL,
+  host_name VARCHAR(100) NOT NULL DEFAULT '',
+  status ENUM('pending','accepted','declined','cancelled','expired') NOT NULL DEFAULT 'pending',
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  expires_at DATETIME NOT NULL,
+  UNIQUE KEY game_user (game_code,user_id),
+  INDEX(user_id,status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
