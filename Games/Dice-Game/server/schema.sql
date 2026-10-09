@@ -65,3 +65,12 @@ CREATE TABLE IF NOT EXISTS dice_invites (
   UNIQUE KEY game_user (game_code,user_id),
   INDEX(user_id,status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- 1-vs-1 starter rotation: last duel game of each account pair (lower user id first). api/game.php also creates it on demand.
+CREATE TABLE IF NOT EXISTS dice_duel_pairs (
+  user_lo INT UNSIGNED NOT NULL,
+  user_hi INT UNSIGNED NOT NULL,
+  game_code VARCHAR(8) NOT NULL,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (user_lo, user_hi)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

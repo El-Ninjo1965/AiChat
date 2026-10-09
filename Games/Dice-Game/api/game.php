@@ -54,7 +54,8 @@ const PRESENCE_TTL=70;const INVITE_TTL=600;const BUSY_TTL=900;
 // Presence/invitation tables are created on demand (the deploy only uploads files); never call inside a transaction (DDL commits implicitly).
 function socialTables(PDO $pdo){static $done=false;if($done)return;$done=true;
   $pdo->exec("CREATE TABLE IF NOT EXISTS dice_presence (user_id INT UNSIGNED PRIMARY KEY, last_seen TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, INDEX(last_seen)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
-  $pdo->exec("CREATE TABLE IF NOT EXISTS dice_invites (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, game_code VARCHAR(8) NOT NULL, user_id INT UNSIGNED NOT NULL, host_name VARCHAR(100) NOT NULL DEFAULT '', status ENUM('pending','accepted','declined','cancelled','expired') NOT NULL DEFAULT 'pending', created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, expires_at DATETIME NOT NULL, UNIQUE KEY game_user (game_code,user_id), INDEX(user_id,status)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");}
+  $pdo->exec("CREATE TABLE IF NOT EXISTS dice_invites (id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY, game_code VARCHAR(8) NOT NULL, user_id INT UNSIGNED NOT NULL, host_name VARCHAR(100) NOT NULL DEFAULT '', status ENUM('pending','accepted','declined','cancelled','expired') NOT NULL DEFAULT 'pending', created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, expires_at DATETIME NOT NULL, UNIQUE KEY game_user (game_code,user_id), INDEX(user_id,status)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");
+  $pdo->exec("CREATE TABLE IF NOT EXISTS dice_duel_pairs (user_lo INT UNSIGNED NOT NULL, user_hi INT UNSIGNED NOT NULL, game_code VARCHAR(8) NOT NULL, updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, PRIMARY KEY(user_lo,user_hi)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci");}
 function userId(PDO $pdo,string $name){$q=$pdo->prepare('SELECT id,username FROM dice_users WHERE LOWER(username)=LOWER(?)');$q->execute([$name]);return $q->fetch()?:null;}
 function isPresent(PDO $pdo,int $uid):bool{$q=$pdo->prepare('SELECT 1 FROM dice_presence WHERE user_id=? AND last_seen>NOW()-INTERVAL '.PRESENCE_TTL.' SECOND');$q->execute([$uid]);return (bool)$q->fetch();}
 function inviteStatus(PDO $pdo,string $code,string $account,string $status){$u=userId($pdo,$account);if($u)$pdo->prepare('UPDATE dice_invites SET status=? WHERE game_code=? AND user_id=?')->execute([$status,$code,$u['id']]);}
@@ -71,6 +72,17 @@ function busyAccounts(PDO $pdo,string $except=''):array{$b=[];foreach($pdo->quer
 // Direct 1-vs-1: a private model-2 game (state.duel) with the inviting account and one invite seat; it is hidden from the public list,
 // has no open seats and accepts no seat changes. Accepting starts it at once with exactly these two accounts.
 function isDuel($st):bool{return is_object($st)&&!empty($st->duel);}
+// 1-vs-1 starter rotation: consecutive games of the same two accounts alternate the opening player (A, B, A, ...).
+// A game counts once anybody has scored in it; an untouched game (accepted or reset, then ended without a score) keeps its opener.
+function gamePlayed($st):bool{foreach(players($st) as $p)if(is_object($p)&&((int)($p->entries??0)>0||(isset($p->scores)&&count((array)$p->scores))))return true;return false;}
+function nextDuelStart($st):int{$s=(int)($st->start??0)===1?1:0;return gamePlayed($st)?1-$s:$s;}
+// Opening seat of a newly accepted duel from the pair's previous duel game (dice_duel_pairs, locked last: users → game → pair); first game: the inviter (seat 0).
+function duelOpener(PDO $pdo,int $a,int $b,array $accounts,string $code):int{$lo=min($a,$b);$hi=max($a,$b);$seat=0;
+  $q=$pdo->prepare('SELECT game_code FROM dice_duel_pairs WHERE user_lo=? AND user_hi=? FOR UPDATE');$q->execute([$lo,$hi]);$prev=(string)($q->fetchColumn()?:'');
+  if($prev!==''&&$prev!==$code){$r=$pdo->prepare('SELECT state_json FROM dice_games WHERE game_code=?');$r->execute([$prev]);$ps=json_decode((string)($r->fetchColumn()?:''));
+    if(is_object($ps)){$who=seatAccount(players($ps)[nextDuelStart($ps)]??null);foreach($accounts as $i=>$n)if($who!==''&&strcasecmp((string)$n,$who)===0)$seat=(int)$i;}}
+  $pdo->prepare('INSERT INTO dice_duel_pairs(user_lo,user_hi,game_code) VALUES(?,?,?) ON DUPLICATE KEY UPDATE game_code=VALUES(game_code)')->execute([$lo,$hi,$code]);
+  return $seat;}
 // Locks both accounts' user rows in id order, so every invite / cross-invite / accept of a pair is serialized (and cannot deadlock).
 function lockPair(PDO $pdo,int $a,int $b){$q=$pdo->prepare('SELECT id FROM dice_users WHERE id IN (?,?) ORDER BY id FOR UPDATE');$q->execute([min($a,$b),max($a,$b)]);$q->fetchAll();}
 // Ends a not yet accepted 1-vs-1 invitation (lock order: game row, then invitation); the game row is closed only if the invitation really was still pending (never a started game).
@@ -119,6 +131,7 @@ function duelAcceptLocked(PDO $pdo,string $c,array $u,string $cid){$g=lockGame($
   $pdo->prepare("UPDATE dice_invites SET status='accepted' WHERE game_code=? AND user_id=?")->execute([$c,$u['id']]);
   // Accepting binds this account to the game: its other pending 1-vs-1 invitations (sent and received) are withdrawn, so it never ends up in two duels.
   cancelDuelsOf($pdo,$u,$c);
+  $hu=userId($pdo,$host);if($hu){$o=duelOpener($pdo,(int)$hu['id'],(int)$u['id'],[$host,$acct],$c);$st->turn=$o;$st->start=$o;}
   $next=saveGame($pdo,$g,$st);$pdo->commit();gameOut($g,$st,$next,$cid,['seat'=>1,'duel'=>true]);}
 // Accept / decline of a 1-vs-1 invitation in its own transaction (pair lock first, then the game row).
 function duelReply(PDO $pdo,string $c,array $u,string $cid,bool $accept,string $host){$hu=userId($pdo,$host);if(!$hu)out(['ok'=>false,'error'=>'no_invite'],404);
@@ -297,7 +310,9 @@ if($method==='POST'&&$action==='update'){rate($pdo,'sync',actorOf(currentUser($p
   if(!empty($cur->model)){$n=count(players($cur));$t=(int)($cur->turn??0);
     if(empty($cur->locked))$deny('not_started');
     if(rosterKey($cur)!==rosterKey($state))$deny('roster_locked');
-    if($reset){if(!holdsSeat($cur,(int)$cur->hostSeat,$cid,$acct))$deny('not_host');$nt=$state->turn??null;if(!is_int($nt)||$nt<0||$nt>=$n)$deny('invalid_turn');$empty=progressKey(freshSeat(new stdClass()));foreach(players($state) as $p)if(progressKey($p)!==$empty)$deny('invalid_reset');}
+    if($reset){if(!holdsSeat($cur,(int)$cur->hostSeat,$cid,$acct))$deny('not_host');$nt=$state->turn??null;if(!is_int($nt)||$nt<0||$nt>=$n)$deny('invalid_turn');$empty=progressKey(freshSeat(new stdClass()));foreach(players($state) as $p)if(progressKey($p)!==$empty)$deny('invalid_reset');
+      // 1-vs-1 rematch: the server, not the host device, decides who opens (alternating, see nextDuelStart).
+      if(isDuel($cur)){if($nt!==nextDuelStart($cur))$deny('invalid_turn');$state->start=$nt;$json=json_encode($state,JSON_UNESCAPED_UNICODE);}}
     else{if(!holdsSeat($cur,$t,$cid,$acct))$deny('not_your_turn');$nt=$state->turn??null;if(!is_int($nt)||($nt!==$t&&$nt!==($t+1)%$n))$deny('invalid_turn');foreach(players($cur) as $i=>$p)if($i!==$t&&progressKey($p)!==progressKey($state->players[$i]))$deny('not_your_seat');}}
   $next=(int)$g['version']+1;$pdo->prepare("UPDATE dice_games SET state_json=?,version=?,updated_at=NOW() WHERE game_code=?")->execute([$json,$next,$c]);$pdo->commit();out(['ok'=>true,'version'=>$next]);}
 out(['ok'=>false,'error'=>'bad_request'],400);
