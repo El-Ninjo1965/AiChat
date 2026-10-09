@@ -159,3 +159,66 @@ html.dark #rollBtn.roll-stage-3{background:#7f1d1d;color:#fee2e2}
 @media(max-width:1100px){.helpGrid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:600px){.helpGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.diceExample{font-size:1.75rem}}
 .lastScoreNotice{margin:0 0 10px;padding:9px 12px;border-radius:9px;background:#e0f2fe;color:#0c4a6e;font-weight:700;text-align:center}.dark .lastScoreNotice{background:#164e63;color:#ecfeff}
+/* Play mode (⛶): fixed one-screen layout sized by playFit() to the visible viewport; header, navigation and session panels are hidden. */
+.playModeBtn{white-space:nowrap;font-weight:700}
+.playExit[hidden],html:not(.playMode) .playExit{display:none!important}
+html.playMode,html.playMode body{overflow:hidden!important;height:100%;overscroll-behavior:none;touch-action:manipulation}
+html.playMode header,html.playMode #inviteBar,html.playMode .setup,html.playMode #sessionBox,html.playMode #statsView,html.playMode #onlinePanel,html.playMode #people,html.playMode #records,html.playMode #roller .rollerHead,html.playMode #roller .lastScoreNotice{display:none!important}
+html.playMode main{position:fixed;z-index:20;left:var(--pm-left,0);top:var(--pm-top,0);width:var(--pm-w,100vw);height:var(--pm-h,100dvh);max-width:none;margin:0;
+  padding:max(4px,env(safe-area-inset-top)) max(4px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left));
+  display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"turn exit" "roller roller" "board board";gap:4px;overflow:hidden;background:#f4f7fb}
+html.dark.playMode main{background:#111827}
+html.playMode .playExit{grid-area:exit;align-self:center;min-height:34px;min-width:44px;padding:2px 10px!important;font-weight:800;white-space:nowrap;border-color:#ef4444}
+html.playMode #turn{grid-area:turn;margin:0;padding:3px 8px;font-size:13px;line-height:1.25;min-width:0;align-self:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.playMode #roller{grid-area:roller;margin:0!important;padding:3px 4px!important;display:flex;align-items:center;justify-content:center;gap:6px;min-width:0}
+html.playMode #roller[hidden]{display:none!important}
+html.playMode:not(.pmLand) #roller .rollDice{--pm-die:clamp(30px,min(calc((var(--pm-w,100vw) - 150px) / 5.4),calc(var(--pm-h,100dvh) * .085)),64px);display:grid!important;grid-template-columns:repeat(5,auto);gap:4px!important;margin:0!important;flex-wrap:nowrap}
+html.playMode #roller .rollDie{position:relative;padding:2px!important;margin:0;min-width:0;border-width:3px;gap:0}
+html.playMode #roller .rollDie .die-svg,html.playMode #roller .emptyDie{width:var(--pm-die)!important;height:var(--pm-die)!important;min-width:var(--pm-die)!important;font-size:calc(var(--pm-die) * .4)}
+html.playMode #roller .rollDie small{position:absolute;left:0;right:0;bottom:-1px;font-size:9px;line-height:1;pointer-events:none}
+html.playMode #roller .rollActions{margin:0}
+html.playMode #roller #rollBtn{min-height:44px;min-width:76px;padding:4px 8px!important;font-size:15px;white-space:nowrap}
+html.playMode #board,html.playMode #lobby{grid-area:board;min-height:0;min-width:0;margin:0;overflow:hidden}
+html.playMode #lobby{overflow:auto}
+html.playMode #board[hidden]{display:none!important}
+html.playMode .pmBoard{display:flex;flex-direction:column;height:100%;width:100%}
+html.playMode .pmTable{width:100%;table-layout:fixed;border-collapse:collapse;font-size:var(--pm-fs,13px);background:#fff}
+html.dark.playMode .pmTable{background:#1f2937}
+html.playMode .pmLower thead{display:none}
+html.playMode .pmLower{margin-top:-1px}
+html.playMode .pmTable col.pmLabCol{width:clamp(64px,30%,190px)}
+html.playMode #board .pmTable tr{height:var(--pm-row,24px)}
+html.playMode #board .pmTable th,html.playMode #board .pmTable td{height:var(--pm-row,24px);padding:0 2px!important;min-width:0!important;width:auto!important;font-size:var(--pm-fs,13px)!important;line-height:1.1;overflow:hidden;vertical-align:middle}
+html.playMode #board .pmTable .pmLab{text-align:left;white-space:nowrap;text-overflow:ellipsis;padding-left:4px!important;font-weight:700}
+html.playMode #board .pmTable .pmIco{display:inline-flex;vertical-align:middle;margin-right:4px}
+html.playMode #board .pmTable .pmIco .die-svg{width:calc(var(--pm-row,24px) - 6px)!important;height:calc(var(--pm-row,24px) - 6px)!important;max-width:24px;max-height:24px}
+html.playMode .pmShort{display:none}
+html.playMode.pmShortLabels .pmShort{display:inline}
+html.playMode.pmShortLabels .pmFull{display:none}
+html.playMode #board .pmTable .score{display:block;width:100%!important;min-width:0!important;max-width:none!important;height:calc(var(--pm-row,24px) - 2px)!important;min-height:0!important;margin:1px 0!important;padding:0 1px!important;font-size:var(--pm-fs,13px)!important;line-height:1;border-width:1px!important;border-radius:5px;text-align:center;text-align-last:center}
+html.playMode #board .pmTable .score.suggested{border-width:2px!important}
+html.playMode #board .pmTable .playerBox{min-height:0!important;height:calc(var(--pm-row,24px) - 2px);padding:0 2px!important;font-size:var(--pm-fs,13px)!important;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;display:flex;align-items:center;justify-content:center}
+html.playMode #board .pmTable .playerBox select,html.playMode #board .pmTable .playerBox input{min-height:0!important;height:100%;padding:0 2px!important;font-size:var(--pm-fs,13px)!important;margin:0}
+html.playMode #board .pmTable .cpuLevelTag{display:none}
+html.playMode.pmOverflow #board{overflow:auto}
+html.playMode .gameResult{position:fixed;z-index:30;left:50%;bottom:max(8px,env(safe-area-inset-bottom));transform:translateX(-50%);width:min(420px,calc(100% - 16px));max-height:60%;overflow:auto;margin:0;cursor:pointer;box-shadow:0 8px 30px #0006}
+/* Landscape: dice column on the left, upper and lower section side by side. */
+html.playMode.pmLand main{grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);grid-template-areas:"exit board" "turn board" "roller board"}
+html.playMode.pmLand .playExit{justify-self:stretch}
+html.playMode.pmLand #turn{white-space:normal;max-width:210px;font-size:12px;align-self:start;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+html.playMode.pmLand #roller{display:grid;grid-template-columns:repeat(3,auto);gap:4px;align-self:start;justify-content:start;--pm-die:clamp(28px,min(calc((var(--pm-h,100dvh) - 120px) / 2.4),calc(var(--pm-w,100vw) * .065)),60px)}
+html.playMode.pmLand #roller .rollDice{display:contents!important}
+html.playMode.pmLand #roller .rollActions{display:flex}
+html.playMode.pmLand #roller #rollBtn{width:100%;height:100%;min-width:0;min-height:44px;padding:2px!important;font-size:13px;white-space:normal;line-height:1.15}
+html.playMode.pmLand .pmBoard{flex-direction:row;gap:4px}
+html.playMode.pmLand .pmLower thead{display:table-header-group}
+html.playMode.pmLand .pmLower{margin-top:0}
+html.playMode.pmLand .pmTable{height:auto;align-self:flex-start;flex:1 1 0;width:0;min-width:0}
+/* Small portrait screens: if stacked rows would get too small, playFit() puts both sections side by side (pmSplit) under the dice row. */
+html.playMode.pmSplit .pmBoard{flex-direction:row;gap:3px}
+html.playMode.pmSplit .pmLower thead{display:table-header-group}
+html.playMode.pmSplit .pmLower{margin-top:0}
+html.playMode.pmSplit .pmTable{height:auto;align-self:flex-start;flex:1 1 0;width:0;min-width:0}
+html.playMode.pmSplit .pmTable col.pmLabCol{width:clamp(48px,38%,120px)}
+html:not(.playMode) .playNewGame{display:none!important}
+html.playMode .playNewGame{display:block;width:100%;min-height:44px;margin-top:8px;font-weight:800}
